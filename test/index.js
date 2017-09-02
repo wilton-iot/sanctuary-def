@@ -377,19 +377,6 @@ describe('def', function() {
     eq($7.toString(), '$7 :: a -> a -> a -> a -> a -> a -> a -> Array a');
     eq($8.toString(), '$8 :: a -> a -> a -> a -> a -> a -> a -> a -> Array a');
     eq($9.toString(), '$9 :: a -> a -> a -> a -> a -> a -> a -> a -> a -> Array a');
-
-    var __ = $.__;
-
-    eq($3(10).toString(), '$3(10) :: a -> a -> Array a');
-    eq($3(10, __).toString(), '$3(10) :: a -> a -> Array a');
-    eq($3(__, 20).toString(), '$3(__, 20) :: a -> a -> Array a');
-    eq($3(10, 20).toString(), '$3(10, 20) :: a -> Array a');
-    eq($3(10, __, __).toString(), '$3(10) :: a -> a -> Array a');
-    eq($3(__, 20, __).toString(), '$3(__, 20) :: a -> a -> Array a');
-    eq($3(__, __, 30).toString(), '$3(__, __, 30) :: a -> a -> Array a');
-    eq($3(10, 20, __).toString(), '$3(10, 20) :: a -> Array a');
-    eq($3(10, __, 30).toString(), '$3(10, __, 30) :: a -> Array a');
-    eq($3(__, 20, 30).toString(), '$3(__, 20, 30) :: a -> Array a');
   });
 
   it('returns a curried function', function() {
@@ -447,56 +434,6 @@ describe('def', function() {
     eq($7(1, 2, 3, 4, 5, 6, 7), [1, 2, 3, 4, 5, 6, 7]);
     eq($8(1, 2, 3, 4, 5, 6, 7, 8), [1, 2, 3, 4, 5, 6, 7, 8]);
     eq($9(1, 2, 3, 4, 5, 6, 7, 8, 9), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  });
-
-  it('returns a function which accepts placeholders', function() {
-    //  triple :: Number -> Number -> Number -> Array Number
-    var triple =
-    def('triple', {}, [$.Number, $.Number, $.Number, $.Array($.Number)], list);
-
-    eq(triple($.__, $.__, 3)($.__, 2)(1), [1, 2, 3]);
-
-    throws(function() { triple($.__, /x/); },
-           TypeError,
-           'Invalid value\n' +
-           '\n' +
-           'triple :: Number -> Number -> Number -> Array Number\n' +
-           '                    ^^^^^^\n' +
-           '                      1\n' +
-           '\n' +
-           '1)  /x/ :: RegExp\n' +
-           '\n' +
-           'The value at position 1 is not a member of ‘Number’.\n' +
-           '\n' +
-           'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
-
-    throws(function() { triple($.__, $.__, /x/); },
-           TypeError,
-           'Invalid value\n' +
-           '\n' +
-           'triple :: Number -> Number -> Number -> Array Number\n' +
-           '                              ^^^^^^\n' +
-           '                                1\n' +
-           '\n' +
-           '1)  /x/ :: RegExp\n' +
-           '\n' +
-           'The value at position 1 is not a member of ‘Number’.\n' +
-           '\n' +
-           'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
-
-    throws(function() { triple($.__, 2, 3)(/x/); },
-           TypeError,
-           'Invalid value\n' +
-           '\n' +
-           'triple :: Number -> Number -> Number -> Array Number\n' +
-           '          ^^^^^^\n' +
-           '            1\n' +
-           '\n' +
-           '1)  /x/ :: RegExp\n' +
-           '\n' +
-           'The value at position 1 is not a member of ‘Number’.\n' +
-           '\n' +
-           'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
   });
 
   it('returns a function which throws if given too many args', function() {
@@ -754,14 +691,11 @@ describe('def', function() {
     var a000 = def('a00', {}, [a, a, a, $.Array(a)], Array);
     var anum = a000(1);
     var astr = a000('a');
-    var bstr = a000($.__, 'b');
     var abstr = astr('b');
 
     eq(anum(2, 3), [1, 2, 3]);
     eq(anum(2)(3), [1, 2, 3]);
     eq(astr('b', 'c'), ['a', 'b', 'c']);
-    eq(bstr('a', 'c'), ['a', 'b', 'c']);
-    eq(astr($.__, 'c')('b'), ['a', 'b', 'c']);
     eq(abstr('c'), ['a', 'b', 'c']);
   });
 
@@ -2087,20 +2021,6 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { aa($.__, 0)(/x/); },
-           TypeError,
-           'Type-variable constraint violation\n' +
-           '\n' +
-           'aa :: a -> a -> Pair a a\n' +
-           '      ^    ^\n' +
-           '      1    2\n' +
-           '\n' +
-           '1)  /x/ :: RegExp\n' +
-           '\n' +
-           '2)  0 :: Number\n' +
-           '\n' +
-           'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
-
     throws(function() { aa([Left('XXX'), 42]); },
            TypeError,
            'Type-variable constraint violation\n' +
@@ -2724,20 +2644,6 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Alternative for information about the sanctuary-type-classes/Alternative type class.\n');
 
-    throws(function() { alt($.__, Right(1)); },
-           TypeError,
-           'Type-class constraint violation\n' +
-           '\n' +
-           'alt :: Alternative a => a -> a -> a\n' +
-           '       ^^^^^^^^^^^^^         ^\n' +
-           '                             1\n' +
-           '\n' +
-           '1)  Right(1) :: Either b Number, Either b Integer\n' +
-           '\n' +
-           '‘alt’ requires ‘a’ to satisfy the Alternative type-class constraint; the value at position 1 does not.\n' +
-           '\n' +
-           'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Alternative for information about the sanctuary-type-classes/Alternative type class.\n');
-
     //  concat :: Semigroup a => a -> a -> a
     var concat = def('concat', {a: [Z.Semigroup]}, [a, a, a], Z.concat);
 
@@ -2751,20 +2657,6 @@ describe('def', function() {
            'concat :: Semigroup a => a -> a -> a\n' +
            '          ^^^^^^^^^^^    ^\n' +
            '                         1\n' +
-           '\n' +
-           '1)  /x/ :: RegExp\n' +
-           '\n' +
-           '‘concat’ requires ‘a’ to satisfy the Semigroup type-class constraint; the value at position 1 does not.\n' +
-           '\n' +
-           'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Semigroup for information about the sanctuary-type-classes/Semigroup type class.\n');
-
-    throws(function() { concat($.__, /x/); },
-           TypeError,
-           'Type-class constraint violation\n' +
-           '\n' +
-           'concat :: Semigroup a => a -> a -> a\n' +
-           '          ^^^^^^^^^^^         ^\n' +
-           '                              1\n' +
            '\n' +
            '1)  /x/ :: RegExp\n' +
            '\n' +

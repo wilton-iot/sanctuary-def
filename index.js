@@ -185,27 +185,6 @@
 
   'use strict';
 
-  //# __ :: Placeholder
-  //.
-  //. The special placeholder value.
-  //.
-  //. One may wish to partially apply a function whose parameters are in the
-  //. "wrong" order. Functions defined via sanctuary-def accommodate this by
-  //. accepting placeholders for arguments yet to be provided. For example:
-  //.
-  //. ```javascript
-  //. //    concatS :: String -> String -> String
-  //. const concatS =
-  //. def('concatS', {}, [$.String, $.String, $.String], (x, y) => x + y);
-  //.
-  //. //    exclaim :: String -> String
-  //. const exclaim = concatS($.__, '!');
-  //.
-  //. exclaim('ahoy');
-  //. // => 'ahoy!'
-  //. ```
-  var __ = {'@@functional/placeholder': true};
-
   var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
   var MIN_SAFE_INTEGER = -MAX_SAFE_INTEGER;
 
@@ -2452,12 +2431,7 @@
       var indexes = [];
       for (var idx = 0; idx < _indexes.length; idx += 1) {
         var index = _indexes[idx];
-
-        if (idx < arguments.length &&
-            !(typeof arguments[idx] === 'object' &&
-              arguments[idx] != null &&
-              arguments[idx]['@@functional/placeholder'] === true)) {
-
+        if (idx < arguments.length) {
           var value = arguments[idx];
           if (opts.checkTypes) {
             var result = satisfactoryTypes(opts.env,
@@ -2499,25 +2473,12 @@
 
     var showType = showTypeWith(typeInfo);
     curried.inspect = curried.toString = function() {
-      var vReprs = [];
-      var tReprs = [];
-      for (var idx = 0, placeholders = 0; idx < n; idx += 1) {
-        if (_indexes.indexOf(idx) >= 0) {
-          placeholders += 1;
-          tReprs.push(showType(typeInfo.types[idx]));
-        } else {
-          while (placeholders > 0) {
-            vReprs.push('__');
-            placeholders -= 1;
-          }
-          vReprs.push(Z.toString(_values[idx]));
-        }
-      }
       return typeInfo.name +
-             when(vReprs.length > 0, parenthesize, vReprs.join(', ')) +
              ' :: ' +
              constraintsRepr(typeInfo.constraints, id, K(K(id))) +
-             when(n === 0, parenthesize, tReprs.join(' -> ')) +
+             when(n === 0,
+                  parenthesize,
+                  typeInfo.types.slice(0, n).map(showType).join(' -> ')) +
              ' -> ' + showType(typeInfo.types[n]);
     };
 
@@ -2571,7 +2532,6 @@
   }
 
   return {
-    __: __,
     Any: Any,
     AnyFunction: AnyFunction,
     Arguments: Arguments,
