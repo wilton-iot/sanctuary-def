@@ -32,15 +32,21 @@ lint:
 	  --global module \
 	  --global require \
 	  --global self \
+	  --rule 'func-call-spacing: [off]' \
+	  --rule 'indent: [off]' \
 	  --rule 'max-len: [error, {code: 79, ignorePattern: "^ *//(# |[.] // |[.]   - <code>)", ignoreUrls: true}]' \
 	  --rule 'no-plusplus: [off]' \
+	  --rule 'no-unexpected-multiline: [off]' \
 	  -- index.js
 	$(ESLINT) \
 	  --env es6 \
 	  --env node \
 	  --env mocha \
 	  --rule 'dot-notation: [error, {allowKeywords: true}]' \
+	  --rule 'func-call-spacing: [off]' \
+	  --rule 'indent: [off]' \
 	  --rule 'max-len: [off]' \
+	  --rule 'no-unexpected-multiline: [off]' \
 	  -- test
 	$(REMEMBER_BOWER) $(shell pwd)
 	rm -f README.md

@@ -252,13 +252,6 @@
   //  or :: (Array a, Array a) -> Array a
   function or(xs, ys) { return isEmpty(xs) ? ys : xs; }
 
-  //  range :: (Number, Number) -> Array Number
-  function range(start, stop) {
-    var result = [];
-    for (var n = start; n < stop; n += 1) result.push(n);
-    return result;
-  }
-
   //  singleton :: (String, a) -> StrMap a
   function singleton(k, v) {
     var result = {};
@@ -378,6 +371,7 @@
   var BINARY        = 'BINARY';
   var FUNCTION      = 'FUNCTION';
   var INCONSISTENT  = 'INCONSISTENT';
+  var NO_ARGUMENTS  = 'NO_ARGUMENTS';
   var NULLARY       = 'NULLARY';
   var RECORD        = 'RECORD';
   var UNARY         = 'UNARY';
@@ -387,6 +381,10 @@
   //  Inconsistent :: Type
   var Inconsistent =
   new _Type(INCONSISTENT, '', '', always2('???'), K(false), [], {});
+
+  //  NoArguments :: Type
+  var NoArguments =
+  new _Type(NO_ARGUMENTS, '', '', always2('()'), K(true), [], {});
 
   //  typeEq :: String -> a -> Boolean
   function typeEq(name) {
@@ -484,7 +482,12 @@
     function(x) { return ValidNumber._test(x) && isFinite(x); }
   );
 
-  //# Function :: Array Type -> Type
+  //  augmentThunk :: NonEmpty (Array Type) -> NonEmpty (Array Type)
+  function augmentThunk(types) {
+    return types.length === 1 ? Z.concat([NoArguments], types) : types;
+  }
+
+  //# Function :: NonEmpty (Array Type) -> Type
   //.
   //. Constructor for Function types.
   //.
@@ -493,7 +496,9 @@
   //.   - `$.Function([$.Date, $.String])` represents the `Date -> String`
   //.     type; and
   //.   - `$.Function([a, b, a])` represents the `(a, b) -> a` type.
-  function Function_(types) {
+  function Function_(_types) {
+    var types = augmentThunk(_types);
+
     function format(outer, inner) {
       var xs = types.map(function(t, idx) {
         return unless(t.type === RECORD || isEmpty(t.keys),
@@ -834,67 +839,31 @@
 
   var def = _create({checkTypes: true, env: env});
 
-  //  arity :: (Number, Function) -> Function
-  function arity(n, f) {
-    return (
-      n === 0 ?
-        function() {
-          return f.apply(this, arguments);
-        } :
-      n === 1 ?
-        function($1) {
-          return f.apply(this, arguments);
-        } :
-      n === 2 ?
-        function($1, $2) {
-          return f.apply(this, arguments);
-        } :
-      n === 3 ?
-        function($1, $2, $3) {
-          return f.apply(this, arguments);
-        } :
-      n === 4 ?
-        function($1, $2, $3, $4) {
-          return f.apply(this, arguments);
-        } :
-      n === 5 ?
-        function($1, $2, $3, $4, $5) {
-          return f.apply(this, arguments);
-        } :
-      n === 6 ?
-        function($1, $2, $3, $4, $5, $6) {
-          return f.apply(this, arguments);
-        } :
-      n === 7 ?
-        function($1, $2, $3, $4, $5, $6, $7) {
-          return f.apply(this, arguments);
-        } :
-      n === 8 ?
-        function($1, $2, $3, $4, $5, $6, $7, $8) {
-          return f.apply(this, arguments);
-        } :
-      // else
-        function($1, $2, $3, $4, $5, $6, $7, $8, $9) {
-          return f.apply(this, arguments);
-        }
-    );
+  //  toThunk :: (a -> b) -> () -> b
+  function toThunk(f) {
+    return function() {
+      return f.apply(this, arguments);
+    };
   }
 
-  //  numArgs :: Number -> String
+  //  numbers :: Array String
+  var numbers = [
+    'zero',
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine'
+  ];
+
+  //  numArgs :: Integer -> String
   function numArgs(n) {
-    switch (n) {
-      case  0:  return  'zero arguments';
-      case  1:  return   'one argument';
-      case  2:  return   'two arguments';
-      case  3:  return 'three arguments';
-      case  4:  return  'four arguments';
-      case  5:  return  'five arguments';
-      case  6:  return   'six arguments';
-      case  7:  return 'seven arguments';
-      case  8:  return 'eight arguments';
-      case  9:  return  'nine arguments';
-      default:  return  n + ' arguments';
-    }
+    return (n < numbers.length ? numbers[n] : String(n)) + ' ' +
+           (n === 1 ? 'argument' : 'arguments');
   }
 
   //  _determineActualTypes :: ... -> Array Type
@@ -966,7 +935,7 @@
 
   //  TypeInfo = { name :: String
   //             , constraints :: StrMap (Array TypeClass)
-  //             , types :: Array Type }
+  //             , types :: NonEmpty (Array Type) }
   //
   //  TypeVarMap = StrMap { types :: Array Type
   //                      , valuesByPath :: StrMap (Array Any) }
@@ -1355,10 +1324,10 @@
   }
 
   var CheckedNullaryType =
-  def('NullaryType',
-      {},
-      [String_, String_, Function_([Any, Boolean_]), Type],
-      NullaryType);
+  def('NullaryType')
+     ({})
+     ([String_, String_, Function_([Any, Boolean_]), Type])
+     (NullaryType);
 
   //# UnaryType :: String -> String -> (Any -> Boolean) -> (t a -> Array a) -> (Type -> Type)
   //.
@@ -1450,18 +1419,18 @@
   }
 
   var CheckedUnaryType =
-  def('UnaryType',
-      {},
-      [String_,
+  def('UnaryType')
+     ({})
+     ([String_,
        String_,
        Function_([Any, Boolean_]),
        Function_([Unchecked('t a'), Array_(Unchecked('a'))]),
-       AnyFunction],
-      function(name, url, test, _1) {
-        return def(stripNamespace(name),
-                   {},
-                   [Type, Type],
-                   UnaryType(name, url, test, _1));
+       AnyFunction])
+     (function(name, url, test, _1) {
+        return def(stripNamespace(name))
+                  ({})
+                  ([Type, Type])
+                  (UnaryType(name, url, test, _1));
       });
 
   //  fromUnaryType :: Type -> (Type -> Type)
@@ -1573,19 +1542,19 @@
   }
 
   var CheckedBinaryType =
-  def('BinaryType',
-      {},
-      [String_,
+  def('BinaryType')
+     ({})
+     ([String_,
        String_,
        Function_([Any, Boolean_]),
        Function_([Unchecked('t a b'), Array_(Unchecked('a'))]),
        Function_([Unchecked('t a b'), Array_(Unchecked('b'))]),
-       AnyFunction],
-      function(name, url, test, _1, _2) {
-        return def(stripNamespace(name),
-                   {},
-                   [Type, Type, Type],
-                   BinaryType(name, url, test, _1, _2));
+       AnyFunction])
+     (function(name, url, test, _1, _2) {
+        return def(stripNamespace(name))
+                  ({})
+                  ([Type, Type, Type])
+                  (BinaryType(name, url, test, _1, _2));
       });
 
   //  xprod :: (Type, Array Type, Array Type) -> Array Type
@@ -1631,7 +1600,7 @@
   }
 
   var CheckedEnumType =
-  def('EnumType', {}, [String_, String_, Array_(Any), Type], EnumType);
+  def('EnumType')({})([String_, String_, Array_(Any), Type])(EnumType);
 
   //# RecordType :: StrMap Type -> Type
   //.
@@ -1709,7 +1678,7 @@
   }
 
   var CheckedRecordType =
-  def('RecordType', {}, [StrMap(Type), Type], RecordType);
+  def('RecordType')({})([StrMap(Type), Type])(RecordType);
 
   //# TypeVariable :: String -> Type
   //.
@@ -1769,7 +1738,7 @@
   }
 
   var CheckedTypeVariable =
-  def('TypeVariable', {}, [String_, Type], TypeVariable);
+  def('TypeVariable')({})([String_, Type])(TypeVariable);
 
   //# UnaryTypeVariable :: String -> (Type -> Type)
   //.
@@ -1828,11 +1797,11 @@
   }
 
   var CheckedUnaryTypeVariable =
-  def('UnaryTypeVariable',
-      {},
-      [String_, AnyFunction],
-      function(name) {
-        return def(name, {}, [Type, Type], UnaryTypeVariable(name));
+  def('UnaryTypeVariable')
+     ({})
+     ([String_, AnyFunction])
+     (function(name) {
+        return def(name)({})([Type, Type])(UnaryTypeVariable(name));
       });
 
   //# BinaryTypeVariable :: String -> (Type -> Type -> Type)
@@ -1863,11 +1832,11 @@
   }
 
   var CheckedBinaryTypeVariable =
-  def('BinaryTypeVariable',
-      {},
-      [String_, AnyFunction],
-      function(name) {
-        return def(name, {}, [Type, Type, Type], BinaryTypeVariable(name));
+  def('BinaryTypeVariable')
+     ({})
+     ([String_, AnyFunction])
+     (function(name) {
+        return def(name)({})([Type, Type, Type])(BinaryTypeVariable(name));
       });
 
   //# Thunk :: Type -> Type
@@ -1875,20 +1844,20 @@
   //. `$.Thunk(T)` is shorthand for `$.Function([T])`, the type comprising
   //. every nullary function (thunk) which returns a value of type `T`.
   var Thunk =
-  def('Thunk',
-      {},
-      [Type, Type],
-      function(t) { return Function_([t]); });
+  def('Thunk')
+     ({})
+     ([Type, Type])
+     (function(t) { return Function_([t]); });
 
   //# Predicate :: Type -> Type
   //.
   //. `$.Predicate(T)` is shorthand for `$.Function([T, $.Boolean])`, the type
   //. comprising every predicate function which takes a value of type `T`.
   var Predicate =
-  def('Predicate',
-      {},
-      [Type, Type],
-      function(t) { return Function_([t, Boolean_]); });
+  def('Predicate')
+     ({})
+     ([Type, Type])
+     (function(t) { return Function_([t, Boolean_]); });
 
   //. ### Type classes
   //.
@@ -2026,8 +1995,9 @@
     f                   // :: Function
   ) {
     var expType = typeInfo.types[index];
-    var numArgsExpected = expType.keys.length - 1;
-    return arity(numArgsExpected, function() {
+    var isThunk = expType.types.$1.type.type === NO_ARGUMENTS;
+    var numArgsExpected = isThunk ? 0 : expType.keys.length - 1;
+    return function(x) {
       var args = slice.call(arguments);
       if (args.length !== numArgsExpected) {
         throw invalidArgumentsLength(typeInfo, index, numArgsExpected, args);
@@ -2043,7 +2013,7 @@
       var k = last(expType.keys);
       checkValue$([k], expType.types[k].type, output);
       return output;
-    });
+    };
   }
 
   //  wrapFunctionCond ::
@@ -2066,18 +2036,25 @@
     });
   }
 
-  //  tooManyArguments :: (TypeInfo, Integer) -> Error
+  //  invalidArgumentsCount :: (TypeInfo, Integer, Integer, Array Any) -> Error
   //
   //  This function is used in `curry` when a function defined via `def`
   //  is applied to too many arguments.
-  function tooManyArguments(typeInfo, numArgsReceived) {
-    var numArgsExpected = typeInfo.types.length - 1;
+  function invalidArgumentsCount(typeInfo, index, numArgsExpected, args) {
     return new TypeError(trimTrailingSpaces(
-      'Function applied to too many arguments\n\n' +
-      typeSignature(typeInfo) + '\n\n' +
-      q(typeInfo.name) + ' expected' +
-      (numArgsExpected > 0 ? ' at most ' : ' ') + numArgs(numArgsExpected) +
-      ' but received ' + numArgs(numArgsReceived) + '.\n'
+      q(typeInfo.name) + ' applied to the wrong number of arguments\n\n' +
+      underline(
+        typeInfo,
+        K(K(_)),
+        function(index_) {
+          return function(f) {
+            return K(K(index_ === index ? f : _));
+          };
+        }
+      ) + '\n' +
+      'Expected ' + numArgs(numArgsExpected) +
+      ' but received ' + numArgs(args.length) +
+      toMarkdownList('.\n', ':\n\n', Z.toString, args)
     ));
   }
 
@@ -2385,12 +2362,7 @@
               return function(propPath) {
                 return function(s) {
                   return index_ === index ?
-                    String(t).replace(
-                      /^[(](.*) -> (.*)[)]$/,
-                      function(s, $1, $2) {
-                        return _('(') + f($1) + _(' -> ' + $2 + ')');
-                      }
-                    ) :
+                    t.format(_, function(k) { return k === '$1' ? f : _; }) :
                     _(s);
                 };
               };
@@ -2416,58 +2388,52 @@
     typeInfo,     // :: TypeInfo
     _typeVarMap,  // :: TypeVarMap
     _values,      // :: Array Any
-    _indexes,     // :: Array Integer
+    index,        // :: Integer
     impl          // :: Function
   ) {
     var n = typeInfo.types.length - 1;
+    var isThunk = typeInfo.types[0].type === NO_ARGUMENTS;
+    var numArgsExpected = isThunk ? 0 : 1;
 
-    var curried = arity(_indexes.length, function() {
-      if (opts.checkTypes) {
-        var delta = _indexes.length - arguments.length;
-        if (delta < 0) throw tooManyArguments(typeInfo, n - delta);
+    var curried = when(isThunk, toThunk, function(x) {
+      var args = slice.call(arguments);
+      //  This check is so important it should be performed even when
+      //  type checking is disabled. It's inexpensive.
+      if (args.length !== numArgsExpected) {
+        throw invalidArgumentsCount(typeInfo, index, numArgsExpected, args);
       }
+
       var typeVarMap = _typeVarMap;
-      var values = _values.slice();
-      var indexes = [];
-      for (var idx = 0; idx < _indexes.length; idx += 1) {
-        var index = _indexes[idx];
-        if (idx < arguments.length) {
-          var value = arguments[idx];
-          if (opts.checkTypes) {
-            var result = satisfactoryTypes(opts.env,
-                                           typeInfo,
-                                           typeVarMap,
-                                           typeInfo.types[index],
-                                           index,
-                                           [],
-                                           [value]);
-            typeVarMap = assertRight(result).typeVarMap;
-          }
-          values[index] = value;
-        } else {
-          indexes.push(index);
-        }
+      var values = Z.concat(_values, args);
+      if (opts.checkTypes) {
+        var result = satisfactoryTypes(opts.env,
+                                       typeInfo,
+                                       typeVarMap,
+                                       typeInfo.types[index],
+                                       index,
+                                       [],
+                                       args);
+        typeVarMap = assertRight(result).typeVarMap;
       }
-      if (isEmpty(indexes)) {
-        if (opts.checkTypes) {
-          var returnValue = impl.apply(this,
-                                       wrapFunctions(opts.env,
-                                                     typeInfo,
-                                                     [typeVarMap],
-                                                     values));
-          assertRight(satisfactoryTypes(opts.env,
-                                        typeInfo,
-                                        typeVarMap,
-                                        typeInfo.types[n],
-                                        n,
-                                        [],
-                                        [returnValue]));
-          return wrapFunctionCond(env, typeInfo, [typeVarMap], n, returnValue);
-        } else {
-          return impl.apply(this, values);
-        }
+
+      if (index + 1 < n) {
+        return curry(opts, typeInfo, typeVarMap, values, index + 1, impl);
+      } else if (opts.checkTypes) {
+        var returnValue = impl.apply(this,
+                                     wrapFunctions(opts.env,
+                                                   typeInfo,
+                                                   [typeVarMap],
+                                                   values));
+        assertRight(satisfactoryTypes(opts.env,
+                                      typeInfo,
+                                      typeVarMap,
+                                      typeInfo.types[n],
+                                      n,
+                                      [],
+                                      [returnValue]));
+        return wrapFunctionCond(env, typeInfo, [typeVarMap], n, returnValue);
       } else {
-        return curry(opts, typeInfo, typeVarMap, values, indexes, impl);
+        return impl.apply(this, values);
       }
     });
 
@@ -2487,17 +2453,12 @@
 
   function _create(opts) {
     function def(name, constraints, expTypes, impl) {
-      var values = new Array(expTypes.length - 1);
-      if (values.length > 9) {
-        throw new RangeError(q(def.name) + ' cannot define a function ' +
-                             'with arity greater than nine');
-      }
-      return curry(opts,
-                   {name: name, constraints: constraints, types: expTypes},
-                   {},
-                   values,
-                   range(0, values.length),
-                   impl);
+      var typeInfo = {
+        name: name,
+        constraints: constraints,
+        types: augmentThunk(expTypes)
+      };
+      return curry(opts, typeInfo, {}, [], 0, impl);
     }
     return def(def.name,
                {},
@@ -2510,16 +2471,16 @@
   }
 
   var create =
-  def('create',
-      {},
-      [RecordType({checkTypes: Boolean_, env: Array_(Any)}), AnyFunction],
-      _create);
+  def('create')
+     ({})
+     ([RecordType({checkTypes: Boolean_, env: Array_(Any)}), AnyFunction])
+     (_create);
 
   //  fromUncheckedUnaryType :: (Type -> Type) -> (Type -> Type)
   function fromUncheckedUnaryType(typeConstructor) {
     var t = typeConstructor(Unknown);
     var _1 = t.types.$1.extractor;
-    return CheckedUnaryType(t.name, t.url, t._test, _1);
+    return CheckedUnaryType(t.name)(t.url)(t._test)(_1);
   }
 
   //  fromUncheckedBinaryType :: ((Type, Type) -> Type) ->
@@ -2528,7 +2489,7 @@
     var t = typeConstructor(Unknown, Unknown);
     var _1 = t.types.$1.extractor;
     var _2 = t.types.$2.extractor;
-    return CheckedBinaryType(t.name, t.url, t._test, _1, _2);
+    return CheckedBinaryType(t.name)(t.url)(t._test)(_1)(_2);
   }
 
   return {
@@ -2540,7 +2501,7 @@
     Date: Date_,
     Error: Error_,
     FiniteNumber: FiniteNumber,
-    Function: def('Function', {}, [Array_(Type), Type], Function_),
+    Function: def('Function')({})([Array_(Type), Type])(Function_),
     GlobalRegExp: GlobalRegExp,
     Integer: Integer,
     NegativeFiniteNumber: NegativeFiniteNumber,
@@ -2573,7 +2534,7 @@
     ValidNumber: ValidNumber,
     env: env,
     create: create,
-    test: def('test', {}, [Array_(Type), Type, Any, Boolean_], test),
+    test: def('test')({})([Array_(Type), Type, Any, Boolean_])(test),
     NullaryType: CheckedNullaryType,
     UnaryType: CheckedUnaryType,
     BinaryType: CheckedBinaryType,

@@ -50,32 +50,25 @@ var m = $.UnaryTypeVariable('m');
 
 function list() { return Array.prototype.slice.call(arguments); }
 
-var $0 = def('$0', {}, [$.Array(a)], list);
-var $1 = def('$1', {}, [a, $.Array(a)], list);
-var $2 = def('$2', {}, [a, a, $.Array(a)], list);
-var $3 = def('$3', {}, [a, a, a, $.Array(a)], list);
-var $4 = def('$4', {}, [a, a, a, a, $.Array(a)], list);
-var $5 = def('$5', {}, [a, a, a, a, a, $.Array(a)], list);
-var $6 = def('$6', {}, [a, a, a, a, a, a, $.Array(a)], list);
-var $7 = def('$7', {}, [a, a, a, a, a, a, a, $.Array(a)], list);
-var $8 = def('$8', {}, [a, a, a, a, a, a, a, a, $.Array(a)], list);
-var $9 = def('$9', {}, [a, a, a, a, a, a, a, a, a, $.Array(a)], list);
+var $0 = def('$0')({})([$.Array(a)])(list);
+var $1 = def('$1')({})([a, $.Array(a)])(list);
+var $2 = def('$2')({})([a, a, $.Array(a)])(list);
+var $3 = def('$3')({})([a, a, a, $.Array(a)])(list);
 
 
 var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
 var MIN_SAFE_INTEGER = -MAX_SAFE_INTEGER;
 
 //  Integer :: Type
-var Integer = $.NullaryType(
-  'my-package/Integer',
-  'http://example.com/my-package#Integer',
-  function(x) {
-    return $.Number._test(x) &&
-           Math.floor(x) === Number(x) &&
-           x >= MIN_SAFE_INTEGER &&
-           x <= MAX_SAFE_INTEGER;
-  }
-);
+var Integer = $.NullaryType
+  ('my-package/Integer')
+  ('http://example.com/my-package#Integer')
+  (function(x) {
+     return $.Number._test(x) &&
+            Math.floor(x) === Number(x) &&
+            x >= MIN_SAFE_INTEGER &&
+            x <= MAX_SAFE_INTEGER;
+   });
 
 
 function _Maybe(tag, value) {
@@ -127,12 +120,11 @@ var Nothing = new _Maybe('Nothing');
 function Just(x) { return new _Maybe('Just', x); }
 
 //  Maybe :: Type
-var Maybe = $.UnaryType(
-  'my-package/Maybe',
-  'http://example.com/my-package#Maybe',
-  function(x) { return type(x) === 'my-package/Maybe'; },
-  function(maybe) { return maybe.isJust ? [maybe.value] : []; }
-);
+var Maybe = $.UnaryType
+  ('my-package/Maybe')
+  ('http://example.com/my-package#Maybe')
+  (function(x) { return type(x) === 'my-package/Maybe'; })
+  (function(maybe) { return maybe.isJust ? [maybe.value] : []; });
 
 
 function _Either(tag, value) {
@@ -177,13 +169,12 @@ function Left(x) { return new _Either('Left', x); }
 function Right(x) { return new _Either('Right', x); }
 
 //  Either :: Type
-var Either = $.BinaryType(
-  'my-package/Either',
-  'http://example.com/my-package#Either',
-  function(x) { return type(x) === 'my-package/Either'; },
-  function(either) { return either.isLeft ? [either.value] : []; },
-  function(either) { return either.isRight ? [either.value] : []; }
-);
+var Either = $.BinaryType
+  ('my-package/Either')
+  ('http://example.com/my-package#Either')
+  (function(x) { return type(x) === 'my-package/Either'; })
+  (function(either) { return either.isLeft ? [either.value] : []; })
+  (function(either) { return either.isRight ? [either.value] : []; });
 
 
 //  Pair :: a -> b -> Pair a b
@@ -215,13 +206,12 @@ Pair.prototype.toString = function() {
 };
 
 //  $Pair :: Type
-var $Pair = $.BinaryType(
-  'my-package/Pair',
-  'http://example.com/my-package#Pair',
-  function(x) { return type(x) === 'my-package/Pair'; },
-  function(pair) { return [pair[0]]; },
-  function(pair) { return [pair[1]]; }
-);
+var $Pair = $.BinaryType
+  ('my-package/Pair')
+  ('http://example.com/my-package#Pair')
+  (function(x) { return type(x) === 'my-package/Pair'; })
+  (function(pair) { return [pair[0]]; })
+  (function(pair) { return [pair[1]]; });
 
 
 describe('create', function() {
@@ -250,7 +240,7 @@ describe('create', function() {
 describe('def', function() {
 
   it('type checks its arguments when checkTypes is true', function() {
-    throws(function() { def(null, null, null, null); },
+    throws(function() { def(null)(null)(null)(null); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -264,7 +254,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#String for information about the String type.\n');
 
-    throws(function() { def('', null, null, null); },
+    throws(function() { def('')(null)(null)(null); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -278,7 +268,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#StrMap for information about the sanctuary-def/StrMap type.\n');
 
-    throws(function() { def('', {}, [], null); },
+    throws(function() { def('')({})([])(null); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -292,7 +282,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonEmpty for information about the sanctuary-def/NonEmpty type.\n');
 
-    throws(function() { def('', {}, [1, 2, 3], null); },
+    throws(function() { def('')({})([1, 2, 3])(null); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -306,7 +296,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Type for information about the Type type.\n');
 
-    throws(function() { def('', {}, [$.Null], null); },
+    throws(function() { def('')({})([$.Null])(null); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -326,43 +316,29 @@ describe('def', function() {
 
     //  add :: Number -> Number -> Number
     var add =
-    def('add',
-        {},
-        [$.Number, $.Number, $.Number],
-        function(x, y) { return x + y; });
+    def('add')
+       ({})
+       ([$.Number, $.Number, $.Number])
+       (function(x, y) { return x + y; });
 
-    eq(add(42, 1), 43);
-    eq(add(42)(1), 43);
-    eq(add(1, 2, 3, 4), 3);
-    eq(add(1)(2, 3, 4), 3);
-    eq(add('XXX', {foo: 42}), 'XXX[object Object]');
-    eq(add({foo: 42}, 'XXX'), '[object Object]XXX');
+    eq(add('XXX')({foo: 42}), 'XXX[object Object]');
+    eq(add({foo: 42})('XXX'), '[object Object]XXX');
   });
 
-  it('returns a function whose length matches that of given list', function() {
+  it('returns a function whose length is zero or one', function() {
     eq($0.length, 0);
     eq($1.length, 1);
-    eq($2.length, 2);
-    eq($3.length, 3);
-    eq($4.length, 4);
-    eq($5.length, 5);
-    eq($6.length, 6);
-    eq($7.length, 7);
-    eq($8.length, 8);
-    eq($9.length, 9);
-
-    throws(function() { def('$10', {}, [a, a, a, a, a, a, a, a, a, a, $.Array(a)], list); },
-           RangeError,
-           '‘def’ cannot define a function with arity greater than nine');
+    eq($2.length, 1);
+    eq($3.length, 1);
   });
 
   it('returns a function with "inspect" and "toString" methods', function() {
     //  add :: Number -> Number -> Number
     var add =
-    def('add',
-        {},
-        [$.Number, $.Number, $.Number],
-        function(x, y) { return x + y; });
+    def('add')
+       ({})
+       ([$.Number, $.Number, $.Number])
+       (function(x, y) { return x + y; });
 
     eq(add.inspect(), 'add :: Number -> Number -> Number');
     eq(add.toString(), 'add :: Number -> Number -> Number');
@@ -371,156 +347,69 @@ describe('def', function() {
     eq($1.toString(), '$1 :: a -> Array a');
     eq($2.toString(), '$2 :: a -> a -> Array a');
     eq($3.toString(), '$3 :: a -> a -> a -> Array a');
-    eq($4.toString(), '$4 :: a -> a -> a -> a -> Array a');
-    eq($5.toString(), '$5 :: a -> a -> a -> a -> a -> Array a');
-    eq($6.toString(), '$6 :: a -> a -> a -> a -> a -> a -> Array a');
-    eq($7.toString(), '$7 :: a -> a -> a -> a -> a -> a -> a -> Array a');
-    eq($8.toString(), '$8 :: a -> a -> a -> a -> a -> a -> a -> a -> Array a');
-    eq($9.toString(), '$9 :: a -> a -> a -> a -> a -> a -> a -> a -> a -> Array a');
   });
 
   it('returns a curried function', function() {
-    eq($2(1).length, 1);
-    eq($3(1).length, 2);
-    eq($4(1).length, 3);
-    eq($5(1).length, 4);
-    eq($6(1).length, 5);
-    eq($7(1).length, 6);
-    eq($8(1).length, 7);
-    eq($9(1).length, 8);
-
-    eq($3(1)(2).length, 1);
-    eq($4(1)(2).length, 2);
-    eq($5(1)(2).length, 3);
-    eq($6(1)(2).length, 4);
-    eq($7(1)(2).length, 5);
-    eq($8(1)(2).length, 6);
-    eq($9(1)(2).length, 7);
-
-    eq($4(1)(2)(3).length, 1);
-    eq($5(1)(2)(3).length, 2);
-    eq($6(1)(2)(3).length, 3);
-    eq($7(1)(2)(3).length, 4);
-    eq($8(1)(2)(3).length, 5);
-    eq($9(1)(2)(3).length, 6);
-
-    eq($5(1)(2)(3)(4).length, 1);
-    eq($6(1)(2)(3)(4).length, 2);
-    eq($7(1)(2)(3)(4).length, 3);
-    eq($8(1)(2)(3)(4).length, 4);
-    eq($9(1)(2)(3)(4).length, 5);
-
-    eq($6(1)(2)(3)(4)(5).length, 1);
-    eq($7(1)(2)(3)(4)(5).length, 2);
-    eq($8(1)(2)(3)(4)(5).length, 3);
-    eq($9(1)(2)(3)(4)(5).length, 4);
-
-    eq($7(1)(2)(3)(4)(5)(6).length, 1);
-    eq($8(1)(2)(3)(4)(5)(6).length, 2);
-    eq($9(1)(2)(3)(4)(5)(6).length, 3);
-
-    eq($8(1)(2)(3)(4)(5)(6)(7).length, 1);
-    eq($9(1)(2)(3)(4)(5)(6)(7).length, 2);
-
-    eq($9(1)(2)(3)(4)(5)(6)(7)(8).length, 1);
-
     eq($0(), []);
     eq($1(1), [1]);
-    eq($2(1, 2), [1, 2]);
-    eq($3(1, 2, 3), [1, 2, 3]);
-    eq($4(1, 2, 3, 4), [1, 2, 3, 4]);
-    eq($5(1, 2, 3, 4, 5), [1, 2, 3, 4, 5]);
-    eq($6(1, 2, 3, 4, 5, 6), [1, 2, 3, 4, 5, 6]);
-    eq($7(1, 2, 3, 4, 5, 6, 7), [1, 2, 3, 4, 5, 6, 7]);
-    eq($8(1, 2, 3, 4, 5, 6, 7, 8), [1, 2, 3, 4, 5, 6, 7, 8]);
-    eq($9(1, 2, 3, 4, 5, 6, 7, 8, 9), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    eq($2(1)(2), [1, 2]);
+    eq($3(1)(2)(3), [1, 2, 3]);
   });
 
   it('returns a function which throws if given too many args', function() {
-    throws(function() { $0(1); },
+    throws(function() { $0('foo', 'bar', 'baz'); },
            TypeError,
-           'Function applied to too many arguments\n' +
+           '‘$0’ applied to the wrong number of arguments\n' +
            '\n' +
            '$0 :: () -> Array a\n' +
+           '      ^^\n' +
+           '      1\n' +
            '\n' +
-           '‘$0’ expected zero arguments but received one argument.\n');
+           'Expected zero arguments but received three arguments:\n' +
+           '\n' +
+           '  - "foo"\n' +
+           '  - "bar"\n' +
+           '  - "baz"\n');
 
-    throws(function() { $1(1, 2); },
+    throws(function() { $1('foo', 'bar', 'baz'); },
            TypeError,
-           'Function applied to too many arguments\n' +
+           '‘$1’ applied to the wrong number of arguments\n' +
            '\n' +
            '$1 :: a -> Array a\n' +
+           '      ^\n' +
+           '      1\n' +
            '\n' +
-           '‘$1’ expected at most one argument but received two arguments.\n');
+           'Expected one argument but received three arguments:\n' +
+           '\n' +
+           '  - "foo"\n' +
+           '  - "bar"\n' +
+           '  - "baz"\n');
 
-    throws(function() { $2(1, 2, 3); },
+    throws(function() { $2(1, 2, 3, 4, 5, 6, 7, 8, 9, 10); },
            TypeError,
-           'Function applied to too many arguments\n' +
+           '‘$2’ applied to the wrong number of arguments\n' +
            '\n' +
            '$2 :: a -> a -> Array a\n' +
+           '      ^\n' +
+           '      1\n' +
            '\n' +
-           '‘$2’ expected at most two arguments but received three arguments.\n');
-
-    throws(function() { $3(1, 2, 3, 4); },
-           TypeError,
-           'Function applied to too many arguments\n' +
+           'Expected one argument but received 10 arguments:\n' +
            '\n' +
-           '$3 :: a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$3’ expected at most three arguments but received four arguments.\n');
-
-    throws(function() { $4(1, 2, 3, 4, 5); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$4 :: a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$4’ expected at most four arguments but received five arguments.\n');
-
-    throws(function() { $5(1, 2, 3, 4, 5, 6); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$5 :: a -> a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$5’ expected at most five arguments but received six arguments.\n');
-
-    throws(function() { $6(1, 2, 3, 4, 5, 6, 7); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$6 :: a -> a -> a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$6’ expected at most six arguments but received seven arguments.\n');
-
-    throws(function() { $7(1, 2, 3, 4, 5, 6, 7, 8); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$7 :: a -> a -> a -> a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$7’ expected at most seven arguments but received eight arguments.\n');
-
-    throws(function() { $8(1, 2, 3, 4, 5, 6, 7, 8, 9); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$8 :: a -> a -> a -> a -> a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$8’ expected at most eight arguments but received nine arguments.\n');
-
-    throws(function() { $9(1, 2, 3, 4, 5, 6, 7, 8, 9, 10); },
-           TypeError,
-           'Function applied to too many arguments\n' +
-           '\n' +
-           '$9 :: a -> a -> a -> a -> a -> a -> a -> a -> a -> Array a\n' +
-           '\n' +
-           '‘$9’ expected at most nine arguments but received 10 arguments.\n');
+           '  - 1\n' +
+           '  - 2\n' +
+           '  - 3\n' +
+           '  - 4\n' +
+           '  - 5\n' +
+           '  - 6\n' +
+           '  - 7\n' +
+           '  - 8\n' +
+           '  - 9\n' +
+           '  - 10\n');
   });
 
   it('returns a function which type checks its arguments', function() {
     var N = $.Number;
-    var $9 = def('$9', {}, [N, N, N, N, N, N, N, N, N, $.Array(N)], list);
+    var $9 = def('$9')({})([N, N, N, N, N, N, N, N, N, $.Array(N)])(list);
 
     throws(function() { $9('X'); },
            TypeError,
@@ -536,7 +425,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 'X'); },
+    throws(function() { $9(1)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -550,7 +439,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 'X'); },
+    throws(function() { $9(1)(2)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -564,7 +453,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 'X'); },
+    throws(function() { $9(1)(2)(3)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -578,7 +467,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 4, 'X'); },
+    throws(function() { $9(1)(2)(3)(4)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -592,7 +481,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 4, 5, 'X'); },
+    throws(function() { $9(1)(2)(3)(4)(5)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -606,7 +495,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 4, 5, 6, 'X'); },
+    throws(function() { $9(1)(2)(3)(4)(5)(6)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -620,7 +509,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 4, 5, 6, 7, 'X'); },
+    throws(function() { $9(1)(2)(3)(4)(5)(6)(7)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -634,7 +523,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    throws(function() { $9(1, 2, 3, 4, 5, 6, 7, 8, 'X'); },
+    throws(function() { $9(1)(2)(3)(4)(5)(6)(7)(8)('X'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -648,12 +537,12 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
-    eq($9(1, 2, 3, 4, 5, 6, 7, 8, 9), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    eq($9(1)(2)(3)(4)(5)(6)(7)(8)(9), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
   it('reports type error correctly for null/undefined', function() {
     //  sqrt :: Number -> Number
-    var sqrt = def('sqrt', {}, [$.Number, $.Number], Math.sqrt);
+    var sqrt = def('sqrt')({})([$.Number, $.Number])(Math.sqrt);
 
     eq(sqrt(25), 5);
 
@@ -688,37 +577,36 @@ describe('def', function() {
 
   it('creates a proper curry closure', function() {
     //  a000 :: a -> a -> a -> Array a
-    var a000 = def('a00', {}, [a, a, a, $.Array(a)], Array);
+    var a000 = def('a00')({})([a, a, a, $.Array(a)])(Array);
     var anum = a000(1);
     var astr = a000('a');
     var abstr = astr('b');
 
-    eq(anum(2, 3), [1, 2, 3]);
     eq(anum(2)(3), [1, 2, 3]);
-    eq(astr('b', 'c'), ['a', 'b', 'c']);
+    eq(astr('b')('c'), ['a', 'b', 'c']);
     eq(abstr('c'), ['a', 'b', 'c']);
   });
 
   it('reports type error correctly for parameterized types', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown), Maybe($.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), Maybe($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  a00 :: a -> a -> a
-    var a00 = def('a00', {}, [a, a, a], identity);
+    var a00 = def('a00')({})([a, a, a])(identity);
 
     //  a01 :: a -> Array a -> a
-    var a01 = def('a01', {}, [a, $.Array(a), a], identity);
+    var a01 = def('a01')({})([a, $.Array(a), a])(identity);
 
     //  a02 :: a -> Array (Array a) -> a
-    var a02 = def('a02', {}, [a, $.Array($.Array(a)), a], identity);
+    var a02 = def('a02')({})([a, $.Array($.Array(a)), a])(identity);
 
     //  ab02e :: a -> b -> Array (Array (Either a b)) -> a
-    var ab02e = def('ab02e', {}, [a, b, $.Array($.Array(Either(a, b))), a], identity);
+    var ab02e = def('ab02e')({})([a, b, $.Array($.Array(Either(a)(b))), a])(identity);
 
     //  ab0e21 :: a -> b -> Either (Array (Array a)) (Array b) -> a
-    var ab0e21 = def('ab0e21', {}, [a, b, Either($.Array($.Array(a)), $.Array(b)), a], identity);
+    var ab0e21 = def('ab0e21')({})([a, b, Either($.Array($.Array(a)))($.Array(b)), a])(identity);
 
-    throws(function() { a00(1, 'a'); },
+    throws(function() { a00(1)('a'); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -732,7 +620,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a00(1, ['a']); },
+    throws(function() { a00(1)(['a']); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -746,7 +634,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a00(1, Just(1)); },
+    throws(function() { a00(1)(Just(1)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -760,7 +648,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a01(1, ['a', 'b']); },
+    throws(function() { a01(1)(['a', 'b']); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -775,7 +663,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a01([1, 2], [1, 2, 3, 4]); },
+    throws(function() { a01([1, 2])([1, 2, 3, 4]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -792,7 +680,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a01([1, 2], [['a', 'b'], ['c', 'd']]); },
+    throws(function() { a01([1, 2])([['a', 'b'], ['c', 'd']]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -807,7 +695,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a01([[1, 2], [3, 4]], [[1, 2], [3, 4]]); },
+    throws(function() { a01([[1, 2], [3, 4]])([[1, 2], [3, 4]]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -822,7 +710,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { a02([1, 2], [[1, 2], [3, 4, 5, 6]]); },
+    throws(function() { a02([1, 2])([[1, 2], [3, 4, 5, 6]]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -841,7 +729,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { ab02e(1, 'x', [[Left('a'), Left('b')], [Left('c'), Left('d')]]); },
+    throws(function() { ab02e(1)('x')([[Left('a'), Left('b')], [Left('c'), Left('d')]]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -858,7 +746,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { ab02e(1, 'x', [[Right(1), Right(2)], [Right(3), Right(4)]]); },
+    throws(function() { ab02e(1)('x')([[Right(1), Right(2)], [Right(3), Right(4)]]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -875,7 +763,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { ab0e21(1, 'x', Left([['a', 'b'], ['c', 'd']])); },
+    throws(function() { ab0e21(1)('x')(Left([['a', 'b'], ['c', 'd']])); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -892,7 +780,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { ab0e21(1, 'x', Right([1, 2])); },
+    throws(function() { ab0e21(1)('x')(Right([1, 2])); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -913,7 +801,7 @@ describe('def', function() {
     var def = $.create({checkTypes: true, env: env});
 
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     throws(function() { id(/xxx/); },
            TypeError,
@@ -933,7 +821,7 @@ describe('def', function() {
     var def = $.create({checkTypes: true, env: env});
 
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     throws(function() { id(/xxx/); },
            TypeError,
@@ -957,9 +845,9 @@ describe('def', function() {
 
   it('returns a function which type checks its return value', function() {
     //  add :: Number -> Number -> Number
-    var add = def('add', {}, [$.Number, $.Number, $.Number], always('XXX'));
+    var add = def('add')({})([$.Number, $.Number, $.Number])(always('XXX'));
 
-    throws(function() { add(2, 2); },
+    throws(function() { add(2)(2); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -977,10 +865,10 @@ describe('def', function() {
   it('performs type checking when a "returned" function is applied', function() {
     //  lt :: Ord a => a -> (a -> Boolean)
     var lt =
-    def('lt',
-        {a: [Z.Ord]},
-        [a, $.Function([a, $.Boolean])],
-        function(y) { return function(x) { return x < y; }; });
+    def('lt')
+       ({a: [Z.Ord]})
+       ([a, $.Function([a, $.Boolean])])
+       (function(y) { return function(x) { return x < y; }; });
 
     eq(lt(1)(0), true);
     eq(lt(1)(1), false);
@@ -1003,13 +891,13 @@ describe('def', function() {
 
   it('does not rely on constructor identity', function() {
     //  inc :: Date -> Date
-    var inc = def('inc', {}, [$.Date, $.Date], function(date) { return new Date(date.valueOf() + 1); });
+    var inc = def('inc')({})([$.Date, $.Date])(function(date) { return new Date(date.valueOf() + 1); });
 
     eq(inc(new Date(42)), new Date(43));
     eq(inc(vm.runInNewContext('new Date(42)')), new Date(43));
 
     //  len :: Array String -> Number
-    var len = def('len', {}, [$.Array($.String), $.Number], length);
+    var len = def('len')({})([$.Array($.String), $.Number])(length);
 
     eq(len(['foo', 'bar', 'baz']), 3);
     eq(len(vm.runInNewContext('["foo", "bar", "baz"]')), 3);
@@ -1017,7 +905,7 @@ describe('def', function() {
 
   it('accommodates circular references', function() {
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     var x = {name: 'x'};
     var y = {name: 'y'};
@@ -1045,12 +933,12 @@ describe('def', function() {
   it('supports custom types', function() {
     //  fromMaybe :: a -> Maybe a
     var fromMaybe =
-    def('fromMaybe',
-        {},
-        [a, Maybe(a), a],
-        function(x, maybe) { return maybe.isJust ? maybe.value : x; });
+    def('fromMaybe')
+       ({})
+       ([a, Maybe(a), a])
+       (function(x, maybe) { return maybe.isJust ? maybe.value : x; });
 
-    throws(function() { fromMaybe('x', Just(null)); },
+    throws(function() { fromMaybe('x')(Just(null)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -1067,18 +955,18 @@ describe('def', function() {
 
   it('supports enumerated types', function() {
     eq(typeof $.EnumType, 'function');
-    eq($.EnumType.length, 3);
+    eq($.EnumType.length, 1);
     eq($.EnumType.toString(), 'EnumType :: String -> String -> Array Any -> Type');
 
     //  TimeUnit :: Type
-    var TimeUnit = $.EnumType('my-package/TimeUnit', '', ['milliseconds', 'seconds', 'minutes', 'hours']);
+    var TimeUnit = $.EnumType('my-package/TimeUnit')('')(['milliseconds', 'seconds', 'minutes', 'hours']);
 
     //  convertTo :: TimeUnit -> ValidDate -> ValidNumber
     var convertTo =
-    def('convertTo',
-        {},
-        [TimeUnit, $.ValidDate, $.ValidNumber],
-        function recur(unit, date) {
+    def('convertTo')
+       ({})
+       ([TimeUnit, $.ValidDate, $.ValidNumber])
+       (function recur(unit, date) {
           switch (unit) {
             case 'milliseconds': return date.valueOf();
             case 'seconds':      return recur('milliseconds', date) / 1000;
@@ -1087,7 +975,7 @@ describe('def', function() {
           }
         });
 
-    throws(function() { convertTo('days', new Date(0)); },
+    throws(function() { convertTo('days')(new Date(0)); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -1099,16 +987,16 @@ describe('def', function() {
            '\n' +
            'The value at position 1 is not a member of ‘TimeUnit’.\n');
 
-    eq(convertTo('seconds', new Date(1000)), 1);
+    eq(convertTo('seconds')(new Date(1000)), 1);
 
     //  SillyType :: Type
-    var SillyType = $.EnumType('my-package/SillyType', '', ['foo', true, 42]);
+    var SillyType = $.EnumType('my-package/SillyType')('')(['foo', true, 42]);
 
     var _env = $.env.concat([SillyType]);
     var _def = $.create({checkTypes: true, env: _env});
 
     //  id :: a -> a
-    var id = _def('id', {}, [a, a], identity);
+    var id = _def('id')({})([a, a])(identity);
 
     eq(id('foo'), 'foo');
     eq(id('bar'), 'bar');
@@ -1144,19 +1032,19 @@ describe('def', function() {
     var Line = $.RecordType({start: Point, end: Point});
 
     //  dist :: Point -> Point -> Number
-    var dist = def('dist', {}, [Point, Point, $.Number], function(p, q) {
+    var dist = def('dist')({})([Point, Point, $.Number])(function(p, q) {
       return Math.sqrt(Math.pow(p.x - q.x, 2) + Math.pow(p.y - q.y, 2));
     });
 
     //  length :: Line -> Number
-    var length = def('length', {}, [Line, $.Number], function(line) {
-      return dist(line.start, line.end);
+    var length = def('length')({})([Line, $.Number])(function(line) {
+      return dist(line.start)(line.end);
     });
 
-    eq(dist({x: 0, y: 0}, {x: 0, y: 0}), 0);
-    eq(dist({x: 0, y: 0}, {x: 0, y: 0, color: 'red'}), 0);
-    eq(dist({x: 1, y: 1}, {x: 4, y: 5}), 5);
-    eq(dist({x: 1, y: 1}, {x: 4, y: 5, color: 'red'}), 5);
+    eq(dist({x: 0, y: 0})({x: 0, y: 0}), 0);
+    eq(dist({x: 0, y: 0})({x: 0, y: 0, color: 'red'}), 0);
+    eq(dist({x: 1, y: 1})({x: 4, y: 5}), 5);
+    eq(dist({x: 1, y: 1})({x: 4, y: 5, color: 'red'}), 5);
 
     eq(length({start: {x: 1, y: 1}, end: {x: 4, y: 5}}), 5);
     eq(length({start: {x: 1, y: 1}, end: {x: 4, y: 5, color: 'red'}}), 5);
@@ -1238,7 +1126,7 @@ describe('def', function() {
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Number for information about the Number type.\n');
 
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     eq(id([{x: 0, y: 0}, {x: 1, y: 1}]), [{x: 0, y: 0}, {x: 1, y: 1}]);
 
@@ -1260,7 +1148,7 @@ describe('def', function() {
     var Foo = $.RecordType({x: a, y: a});
 
     //  foo :: Foo -> Foo
-    var foo = def('foo', {}, [Foo, Foo], identity);
+    var foo = def('foo')({})([Foo, Foo])(identity);
 
     eq(foo({x: 1, y: 2, z: 3}), {x: 1, y: 2, z: 3});
 
@@ -1300,10 +1188,10 @@ describe('def', function() {
 
     //  toUpper :: Nullable String -> Nullable String
     var toUpper =
-    def('toUpper',
-        {},
-        [$.Nullable($.String), $.Nullable($.String)],
-        function(ns) {
+    def('toUpper')
+       ({})
+       ([$.Nullable($.String), $.Nullable($.String)])
+       (function(ns) {
           // eslint-disable-next-line eqeqeq
           return ns === null ? null : ns.toUpperCase();
         });
@@ -1327,18 +1215,18 @@ describe('def', function() {
 
     //  defaultTo :: a -> Nullable a -> a
     var defaultTo =
-    def('defaultTo',
-        {},
-        [a, $.Nullable(a), a],
-        function(x, nullable) {
+    def('defaultTo')
+       ({})
+       ([a, $.Nullable(a), a])
+       (function(x, nullable) {
           // eslint-disable-next-line eqeqeq
           return nullable === null ? x : nullable;
         });
 
-    eq(defaultTo(0, null), 0);
-    eq(defaultTo(0, 42), 42);
+    eq(defaultTo(0)(null), 0);
+    eq(defaultTo(0)(42), 42);
 
-    throws(function() { defaultTo(0, 'XXX'); },
+    throws(function() { defaultTo(0)('XXX'); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -1353,7 +1241,7 @@ describe('def', function() {
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
     //  f :: Nullable a -> Nullable a
-    var f = def('f', {}, [$.Nullable(a), $.Nullable(a)], always(42));
+    var f = def('f')({})([$.Nullable(a), $.Nullable(a)])(always(42));
 
     eq(f(null), 42);
     eq(f(0), 42);
@@ -1385,9 +1273,7 @@ describe('def', function() {
     function Identity(x) { this.value = x; }
     Identity['@@type'] = 'my-package/Identity';
 
-    function isAnyFunction(x) {
-      return $.test($.env, $.AnyFunction, x);
-    }
+    var isAnyFunction = $.test($.env)($.AnyFunction);
     eq(isAnyFunction(null), false);
     eq(isAnyFunction(Math.abs), true);
     eq(isAnyFunction(Identity), true);
@@ -1428,9 +1314,7 @@ describe('def', function() {
     eq($.NonEmpty($.String).name, 'sanctuary-def/NonEmpty');
     eq($.NonEmpty($.String).url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonEmpty');
 
-    function isNonEmptyIntegerArray(x) {
-      return $.test($.env, $.NonEmpty($.Array($.Integer)), x);
-    }
+    var isNonEmptyIntegerArray = $.test($.env)($.NonEmpty($.Array($.Integer)));
     eq(isNonEmptyIntegerArray([]), false);
     eq(isNonEmptyIntegerArray([0]), true);
     eq(isNonEmptyIntegerArray([0.5]), false);
@@ -1496,10 +1380,10 @@ describe('def', function() {
     eq($.ValidDate.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#ValidDate');
 
     //  sinceEpoch :: ValidDate -> Number
-    var sinceEpoch = def('sinceEpoch',
-                         {},
-                         [$.ValidDate, $.Number],
-                         function(date) { return date.valueOf() / 1000; });
+    var sinceEpoch = def('sinceEpoch')
+                        ({})
+                        ([$.ValidDate, $.Number])
+                        (function(date) { return date.valueOf() / 1000; });
 
     throws(function() { sinceEpoch(new Date('foo')); },
            TypeError,
@@ -1522,9 +1406,7 @@ describe('def', function() {
     eq($.PositiveNumber.name, 'sanctuary-def/PositiveNumber');
     eq($.PositiveNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#PositiveNumber');
 
-    function isPositiveNumber(x) {
-      return $.test($.env, $.PositiveNumber, x);
-    }
+    var isPositiveNumber = $.test($.env)($.PositiveNumber);
     eq(isPositiveNumber(null), false);
     eq(isPositiveNumber(NaN), false);
     eq(isPositiveNumber(-1), false);
@@ -1539,9 +1421,7 @@ describe('def', function() {
     eq($.NegativeNumber.name, 'sanctuary-def/NegativeNumber');
     eq($.NegativeNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NegativeNumber');
 
-    function isNegativeNumber(x) {
-      return $.test($.env, $.NegativeNumber, x);
-    }
+    var isNegativeNumber = $.test($.env)($.NegativeNumber);
     eq(isNegativeNumber(null), false);
     eq(isNegativeNumber(NaN), false);
     eq(isNegativeNumber(1), false);
@@ -1556,9 +1436,7 @@ describe('def', function() {
     eq($.ValidNumber.name, 'sanctuary-def/ValidNumber');
     eq($.ValidNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#ValidNumber');
 
-    function isValidNumber(x) {
-      return $.test($.env, $.ValidNumber, x);
-    }
+    var isValidNumber = $.test($.env)($.ValidNumber);
     eq(isValidNumber(NaN), false);
     eq(isValidNumber(1), true);
     eq(isValidNumber(new Number(1)), false);
@@ -1568,9 +1446,7 @@ describe('def', function() {
     eq($.NonZeroValidNumber.name, 'sanctuary-def/NonZeroValidNumber');
     eq($.NonZeroValidNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonZeroValidNumber');
 
-    function isNonZeroValidNumber(x) {
-      return $.test($.env, $.NonZeroValidNumber, x);
-    }
+    var isNonZeroValidNumber = $.test($.env)($.NonZeroValidNumber);
     eq(isNonZeroValidNumber(0), false);
     eq(isNonZeroValidNumber(-0), false);
     eq(isNonZeroValidNumber(1), true);
@@ -1581,9 +1457,7 @@ describe('def', function() {
     eq($.FiniteNumber.name, 'sanctuary-def/FiniteNumber');
     eq($.FiniteNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#FiniteNumber');
 
-    function isFiniteNumber(x) {
-      return $.test($.env, $.FiniteNumber, x);
-    }
+    var isFiniteNumber = $.test($.env)($.FiniteNumber);
     eq(isFiniteNumber(Infinity), false);
     eq(isFiniteNumber(-Infinity), false);
     eq(isFiniteNumber(1), true);
@@ -1594,9 +1468,7 @@ describe('def', function() {
     eq($.PositiveFiniteNumber.name, 'sanctuary-def/PositiveFiniteNumber');
     eq($.PositiveFiniteNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#PositiveFiniteNumber');
 
-    function isPositiveFiniteNumber(x) {
-      return $.test($.env, $.PositiveFiniteNumber, x);
-    }
+    var isPositiveFiniteNumber = $.test($.env)($.PositiveFiniteNumber);
     eq(isPositiveFiniteNumber(null), false);
     eq(isPositiveFiniteNumber(NaN), false);
     eq(isPositiveFiniteNumber(Infinity), false);
@@ -1611,9 +1483,7 @@ describe('def', function() {
     eq($.NegativeFiniteNumber.name, 'sanctuary-def/NegativeFiniteNumber');
     eq($.NegativeFiniteNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NegativeFiniteNumber');
 
-    function isNegativeFiniteNumber(x) {
-      return $.test($.env, $.NegativeFiniteNumber, x);
-    }
+    var isNegativeFiniteNumber = $.test($.env)($.NegativeFiniteNumber);
     eq(isNegativeFiniteNumber(null), false);
     eq(isNegativeFiniteNumber(NaN), false);
     eq(isNegativeFiniteNumber(-Infinity), false);
@@ -1628,9 +1498,7 @@ describe('def', function() {
     eq($.NonZeroFiniteNumber.name, 'sanctuary-def/NonZeroFiniteNumber');
     eq($.NonZeroFiniteNumber.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonZeroFiniteNumber');
 
-    function isNonZeroFiniteNumber(x) {
-      return $.test($.env, $.NonZeroFiniteNumber, x);
-    }
+    var isNonZeroFiniteNumber = $.test($.env)($.NonZeroFiniteNumber);
     eq(isNonZeroFiniteNumber(0), false);
     eq(isNonZeroFiniteNumber(-0), false);
     eq(isNonZeroFiniteNumber(Infinity), false);
@@ -1643,9 +1511,7 @@ describe('def', function() {
     eq($.Integer.name, 'sanctuary-def/Integer');
     eq($.Integer.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Integer');
 
-    function isInteger(x) {
-      return $.test($.env, $.Integer, x);
-    }
+    var isInteger = $.test($.env)($.Integer);
     eq(isInteger(3.14), false);
     eq(isInteger(9007199254740992), false);
     eq(isInteger(-9007199254740992), false);
@@ -1657,9 +1523,7 @@ describe('def', function() {
     eq($.NonZeroInteger.name, 'sanctuary-def/NonZeroInteger');
     eq($.NonZeroInteger.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonZeroInteger');
 
-    function isNonZeroInteger(x) {
-      return $.test($.env, $.NonZeroInteger, x);
-    }
+    var isNonZeroInteger = $.test($.env)($.NonZeroInteger);
     eq(isNonZeroInteger(0), false);
     eq(isNonZeroInteger(-0), false);
     eq(isNonZeroInteger(3.14), false);
@@ -1671,9 +1535,7 @@ describe('def', function() {
     eq($.NonNegativeInteger.name, 'sanctuary-def/NonNegativeInteger');
     eq($.NonNegativeInteger.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonNegativeInteger');
 
-    function isNonNegativeInteger(x) {
-      return $.test($.env, $.NonNegativeInteger, x);
-    }
+    var isNonNegativeInteger = $.test($.env)($.NonNegativeInteger);
     eq(isNonNegativeInteger(0), true);
     eq(isNonNegativeInteger(-0), true);
     eq(isNonNegativeInteger(1), true);
@@ -1686,9 +1548,7 @@ describe('def', function() {
     eq($.PositiveInteger.name, 'sanctuary-def/PositiveInteger');
     eq($.PositiveInteger.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#PositiveInteger');
 
-    function isPositiveInteger(x) {
-      return $.test($.env, $.PositiveInteger, x);
-    }
+    var isPositiveInteger = $.test($.env)($.PositiveInteger);
     eq(isPositiveInteger(1.5), false);
     eq(isPositiveInteger(-1), false);
     eq(isPositiveInteger(1), true);
@@ -1699,9 +1559,7 @@ describe('def', function() {
     eq($.NegativeInteger.name, 'sanctuary-def/NegativeInteger');
     eq($.NegativeInteger.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NegativeInteger');
 
-    function isNegativeInteger(x) {
-      return $.test($.env, $.NegativeInteger, x);
-    }
+    var isNegativeInteger = $.test($.env)($.NegativeInteger);
     eq(isNegativeInteger(-1.5), false);
     eq(isNegativeInteger(1), false);
     eq(isNegativeInteger(-1), true);
@@ -1712,9 +1570,7 @@ describe('def', function() {
     eq($.GlobalRegExp.name, 'sanctuary-def/GlobalRegExp');
     eq($.GlobalRegExp.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#GlobalRegExp');
 
-    function isGlobalRegExp(x) {
-      return $.test($.env, $.GlobalRegExp, x);
-    }
+    var isGlobalRegExp = $.test($.env)($.GlobalRegExp);
     eq(isGlobalRegExp(null), false);
     eq(isGlobalRegExp({global: true}), false);
     eq(isGlobalRegExp(/x/), false);
@@ -1731,9 +1587,7 @@ describe('def', function() {
     eq($.NonGlobalRegExp.name, 'sanctuary-def/NonGlobalRegExp');
     eq($.NonGlobalRegExp.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#NonGlobalRegExp');
 
-    function isNonGlobalRegExp(x) {
-      return $.test($.env, $.NonGlobalRegExp, x);
-    }
+    var isNonGlobalRegExp = $.test($.env)($.NonGlobalRegExp);
     eq(isNonGlobalRegExp(null), false);
     eq(isNonGlobalRegExp({global: false}), false);
     eq(isNonGlobalRegExp(/x/g), false);
@@ -1750,9 +1604,7 @@ describe('def', function() {
     eq($.RegexFlags.name, 'sanctuary-def/RegexFlags');
     eq($.RegexFlags.url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#RegexFlags');
 
-    function isRegexFlags(x) {
-      return $.test($.env, $.RegexFlags, x);
-    }
+    var isRegexFlags = $.test($.env)($.RegexFlags);
     eq(isRegexFlags(''), true);
     eq(isRegexFlags('g'), true);
     eq(isRegexFlags('i'), true);
@@ -1778,21 +1630,21 @@ describe('def', function() {
     eq($.StrMap(a).toString(), '(StrMap a)');
 
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     //  keys :: StrMap a -> Array String
     var keys =
-    def('keys',
-        {},
-        [$.StrMap(a), $.Array($.String)],
-        function(m) { return Object.keys(m).sort(); });
+    def('keys')
+       ({})
+       ([$.StrMap(a), $.Array($.String)])
+       (function(m) { return Object.keys(m).sort(); });
 
     //  values :: StrMap a -> Array a
     var values =
-    def('values',
-        {},
-        [$.StrMap(a), $.Array(a)],
-        function(m) { return keys(m).map(function(k) { return m[k]; }); });
+    def('values')
+       ({})
+       ([$.StrMap(a), $.Array(a)])
+       (function(m) { return keys(m).map(function(k) { return m[k]; }); });
 
     var o = Object.create(null);
     o.x = 1;
@@ -1840,10 +1692,10 @@ describe('def', function() {
 
     //  testUnaryType :: Array (StrMap Number) -> Array (StrMap Number)
     var testUnaryType =
-    def('testUnaryType',
-        {},
-        [$.Array($.StrMap($.Number)), $.Array($.StrMap($.Number))],
-        identity);
+    def('testUnaryType')
+       ({})
+       ([$.Array($.StrMap($.Number)), $.Array($.StrMap($.Number))])
+       (identity);
 
     eq(testUnaryType([{x: 1}, {y: 2}, {z: 3}]), [{x: 1}, {y: 2}, {z: 3}]);
 
@@ -1863,10 +1715,10 @@ describe('def', function() {
 
     //  testBinaryType :: Either a (StrMap b) -> Either a (StrMap b)
     var testBinaryType =
-    def('testBinaryType',
-        {},
-        [Either(a, $.StrMap(b)), Either(a, $.StrMap(b))],
-        identity);
+    def('testBinaryType')
+       ({})
+       ([Either(a)($.StrMap(b)), Either(a)($.StrMap(b))])
+       (identity);
 
     eq(testBinaryType(Left('XXX')), Left('XXX'));
     eq(testBinaryType(Right({x: 1, y: 2, z: 3})), Right({x: 1, y: 2, z: 3}));
@@ -1886,18 +1738,17 @@ describe('def', function() {
 
   it('provides the "Pair" type constructor', function() {
     eq(typeof $.Pair, 'function');
-    eq($.Pair.length, 2);
+    eq($.Pair.length, 1);
     eq($.Pair.toString(), 'Pair :: Type -> Type -> Type');
-    eq($.Pair(a, b).name, 'sanctuary-def/Pair');
-    eq($.Pair(a, b).url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Pair');
-    eq($.Pair(a, b).toString(), '(Pair a b)');
+    eq($.Pair(a)(b).name, 'sanctuary-def/Pair');
+    eq($.Pair(a)(b).url, 'https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Pair');
     eq($.Pair(a)(b).toString(), '(Pair a b)');
 
     //  fst :: Pair a b -> a
-    var fst = def('fst', {}, [$.Pair(a, b), a], function(pair) { return pair[0]; });
+    var fst = def('fst')({})([$.Pair(a)(b), a])(function(pair) { return pair[0]; });
 
     //  snd :: Pair a b -> b
-    var snd = def('snd', {}, [$.Pair(a, b), b], function(pair) { return pair[1]; });
+    var snd = def('snd')({})([$.Pair(a)(b), b])(function(pair) { return pair[1]; });
 
     eq(fst(['foo', 42]), 'foo');
     eq(snd(['foo', 42]), 42);
@@ -1919,7 +1770,7 @@ describe('def', function() {
 
   it('uses Z.toString-like string representations', function() {
     //  f :: Null -> Null
-    var f = def('f', {}, [$.Null, $.Null], identity);
+    var f = def('f')({})([$.Null, $.Null])(identity);
 
     function Point(x, y) {
       this.x = x;
@@ -1971,10 +1822,10 @@ describe('def', function() {
 
     //  add :: Number -> Number -> Number
     var add =
-    def('add',
-        {},
-        [$.Number, $.Number, $.Number],
-        function(x, y) { return x + y; });
+    def('add')
+       ({})
+       ([$.Number, $.Number, $.Number])
+       (function(x, y) { return x + y; });
 
     throws(function() { add([[1], [2]]); },
            TypeError,
@@ -1992,22 +1843,22 @@ describe('def', function() {
   });
 
   it('supports polymorphism via type variables', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown), Maybe($.Unknown), $Pair($.Unknown, $.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), Maybe($.Unknown), $Pair($.Unknown)($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  aa :: a -> a -> (a, a)
-    var aa = def('aa', {}, [a, a, $Pair(a, a)], Pair);
+    var aa = def('aa')({})([a, a, $Pair(a)(a)])(Pair);
     //  ab :: a -> b -> (a, b)
-    var ab = def('ab', {}, [a, b, $Pair(a, b)], Pair);
+    var ab = def('ab')({})([a, b, $Pair(a)(b)])(Pair);
 
-    eq(aa(0, 1), Pair(0, 1));
-    eq(aa(1, 0), Pair(1, 0));
-    eq(ab(0, 1), Pair(0, 1));
-    eq(ab(1, 0), Pair(1, 0));
-    eq(ab(0, false), Pair(0, false));
-    eq(ab(false, 0), Pair(false, 0));
+    eq(aa(0)(1), Pair(0, 1));
+    eq(aa(1)(0), Pair(1, 0));
+    eq(ab(0)(1), Pair(0, 1));
+    eq(ab(1)(0), Pair(1, 0));
+    eq(ab(0)(false), Pair(0, false));
+    eq(ab(false)(0), Pair(false, 0));
 
-    throws(function() { aa(0, /x/); },
+    throws(function() { aa(0)(/x/); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2034,14 +1885,14 @@ describe('def', function() {
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
     //  fromMaybe :: a -> Maybe a -> a
-    var fromMaybe = def('fromMaybe', {}, [a, Maybe(a), a], function(x, maybe) {
+    var fromMaybe = def('fromMaybe')({})([a, Maybe(a), a])(function(x, maybe) {
       return maybe.isJust ? maybe.value : x;
     });
 
-    eq(fromMaybe(0, Nothing), 0);
-    eq(fromMaybe(0, Just(42)), 42);
+    eq(fromMaybe(0)(Nothing), 0);
+    eq(fromMaybe(0)(Just(42)), 42);
 
-    throws(function() { fromMaybe(0, [1, 2, 3]); },
+    throws(function() { fromMaybe(0)([1, 2, 3]); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2056,7 +1907,7 @@ describe('def', function() {
            'See http://example.com/my-package#Maybe for information about the my-package/Maybe type.\n');
 
     //  fst :: Pair a b -> a
-    var fst = def('fst', {}, [$Pair(a, b), a], function(pair) { return pair[0]; });
+    var fst = def('fst')({})([$Pair(a)(b), a])(function(pair) { return pair[0]; });
 
     eq(fst(Pair('XXX', 42)), 'XXX');
 
@@ -2076,10 +1927,10 @@ describe('def', function() {
 
     //  twin :: Pair a a -> Boolean
     var twin =
-    def('twin',
-        {},
-        [$Pair(a, a), $.Boolean],
-        function(pair) { return Z.equals(pair[0], pair[1]); });
+    def('twin')
+       ({})
+       ([$Pair(a)(a), $.Boolean])
+       (function(pair) { return Z.equals(pair[0], pair[1]); });
 
     eq(twin(Pair(42, 42)), true);
     eq(twin(Pair(42, 99)), false);
@@ -2100,17 +1951,17 @@ describe('def', function() {
 
     //  concat :: Either a b -> Either a b -> Either a b
     var concat =
-    def('concat',
-        {},
-        [Either(a, b), Either(a, b), Either(a, b)],
-        Z.concat);
+    def('concat')
+       ({})
+       ([Either(a)(b), Either(a)(b), Either(a)(b)])
+       (Z.concat);
 
-    eq(concat(Left('abc'), Left('def')), Left('abcdef'));
-    eq(concat(Left('abc'), Right('ABC')), Right('ABC'));
-    eq(concat(Right('ABC'), Left('abc')), Right('ABC'));
-    eq(concat(Right('ABC'), Right('DEF')), Right('ABCDEF'));
+    eq(concat(Left('abc'))(Left('def')), Left('abcdef'));
+    eq(concat(Left('abc'))(Right('ABC')), Right('ABC'));
+    eq(concat(Right('ABC'))(Left('abc')), Right('ABC'));
+    eq(concat(Right('ABC'))(Right('DEF')), Right('ABCDEF'));
 
-    throws(function() { concat(Left('abc'), Left([1, 2, 3])); },
+    throws(function() { concat(Left('abc'))(Left([1, 2, 3])); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2124,7 +1975,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { concat(Right('abc'), Right([1, 2, 3])); },
+    throws(function() { concat(Right('abc'))(Right([1, 2, 3])); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2139,9 +1990,9 @@ describe('def', function() {
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
     //  f :: a -> a -> a -> a
-    var f = def('f', {}, [a, a, a, a], function(x, y, z) { return x; });
+    var f = def('f')({})([a, a, a, a])(function(x, y, z) { return x; });
 
-    throws(function() { f(Left('abc'), Left(/XXX/)); },
+    throws(function() { f(Left('abc'))(Left(/XXX/)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2155,7 +2006,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { f(Right(123), Right(/XXX/)); },
+    throws(function() { f(Right(123))(Right(/XXX/)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2169,7 +2020,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { f(Left('abc'), Right(123), Left(/XXX/)); },
+    throws(function() { f(Left('abc'))(Right(123))(Left(/XXX/)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2183,7 +2034,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { f(Left('abc'), Right(123), Right(/XXX/)); },
+    throws(function() { f(Left('abc'))(Right(123))(Right(/XXX/)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2199,15 +2050,15 @@ describe('def', function() {
   });
 
   it('supports arbitrary nesting of types', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown), $.Integer]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), $.Integer]);
     var def = $.create({checkTypes: true, env: env});
 
     //  unnest :: Array (Array a) -> Array a
     var unnest =
-    def('unnest',
-        {},
-        [$.Array($.Array(a)), $.Array(a)],
-        function(xss) { return Z.chain(identity, xss); });
+    def('unnest')
+       ({})
+       ([$.Array($.Array(a)), $.Array(a)])
+       (function(xss) { return Z.chain(identity, xss); });
 
     eq(unnest([[1, 2], [3, 4], [5, 6]]), [1, 2, 3, 4, 5, 6]);
     eq(unnest([[null], [null], [null]]), [null, null, null]);
@@ -2228,12 +2079,12 @@ describe('def', function() {
 
     //  concatComplex :: Array (Either String Integer) -> Array (Either String Integer) -> Array (Either String Integer)
     var concatComplex =
-    def('concatComplex',
-        {},
-        [$.Array(Either($.String, $.Integer)),
-         $.Array(Either($.String, $.Integer)),
-         $.Array(Either($.String, $.Integer))],
-        always([Left(/xxx/)]));
+    def('concatComplex')
+       ({})
+       ([$.Array(Either($.String)($.Integer)),
+         $.Array(Either($.String)($.Integer)),
+         $.Array(Either($.String)($.Integer))])
+       (always([Left(/xxx/)]));
 
     throws(function() { concatComplex([Left(/xxx/), Right(0), Right(0.1), Right(0.2)]); },
            TypeError,
@@ -2263,7 +2114,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Integer for information about the sanctuary-def/Integer type.\n');
 
-    throws(function() { concatComplex([], [Left(/xxx/), Right(0), Right(0.1), Right(0.2)]); },
+    throws(function() { concatComplex([])([Left(/xxx/), Right(0), Right(0.1), Right(0.2)]); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2277,7 +2128,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#String for information about the String type.\n');
 
-    throws(function() { concatComplex([], [Left('abc'), Right(0), Right(0.1), Right(0.2)]); },
+    throws(function() { concatComplex([])([Left('abc'), Right(0), Right(0.1), Right(0.2)]); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2291,7 +2142,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#Integer for information about the sanctuary-def/Integer type.\n');
 
-    throws(function() { concatComplex([], []); },
+    throws(function() { concatComplex([])([]); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2307,18 +2158,18 @@ describe('def', function() {
   });
 
   it('does not allow heterogeneous arrays', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  concat :: Array a -> Array a -> Array a
     var concat =
-    def('concat', {}, [$.Array(a), $.Array(a), $.Array(a)], Z.concat);
+    def('concat')({})([$.Array(a), $.Array(a), $.Array(a)])(Z.concat);
 
-    eq(concat([], []), []);
-    eq(concat([], [1, 2, 3]), [1, 2, 3]);
-    eq(concat([1, 2, 3], []), [1, 2, 3]);
-    eq(concat([1, 2, 3], [4, 5, 6]), [1, 2, 3, 4, 5, 6]);
-    eq(concat([Left('XXX')], [Right(42)]), [Left('XXX'), Right(42)]);
+    eq(concat([])([]), []);
+    eq(concat([])([1, 2, 3]), [1, 2, 3]);
+    eq(concat([1, 2, 3])([]), [1, 2, 3]);
+    eq(concat([1, 2, 3])([4, 5, 6]), [1, 2, 3, 4, 5, 6]);
+    eq(concat([Left('XXX')])([Right(42)]), [Left('XXX'), Right(42)]);
 
     throws(function() { concat([[1, 2, 3], [Left('XXX'), Right(42)]]); },
            TypeError,
@@ -2348,10 +2199,10 @@ describe('def', function() {
 
     //  concatNested :: Array (Array a) -> Array (Array a) -> Array (Array a)
     var concatNested =
-    def('concatNested',
-        {},
-        [$.Array($.Array(a)), $.Array($.Array(a)), $.Array($.Array(a))],
-        always([['a', 'b', 'c'], [1, 2, 3]]));
+    def('concatNested')
+       ({})
+       ([$.Array($.Array(a)), $.Array($.Array(a)), $.Array($.Array(a))])
+       (always([['a', 'b', 'c'], [1, 2, 3]]));
 
     throws(function() { concatNested([['a', 'b', 'c'], [1, 2, 3]]); },
            TypeError,
@@ -2370,7 +2221,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { concatNested([], [['a', 'b', 'c'], [1, 2, 3]]); },
+    throws(function() { concatNested([])([['a', 'b', 'c'], [1, 2, 3]]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2387,7 +2238,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { concatNested([], []); },
+    throws(function() { concatNested([])([]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2407,19 +2258,18 @@ describe('def', function() {
 
   it('permits the use of arrays as tuples', function() {
     //  Pair :: Type
-    var Pair = $.BinaryType(
-      'my-package/Pair',
-      'http://example.com/my-package#Pair',
-      function(x) { return Object.prototype.toString.call(x) === '[object Array]' && x.length === 2; },
-      function(pair) { return [pair[0]]; },
-      function(pair) { return [pair[1]]; }
-    );
+    var Pair = $.BinaryType
+      ('my-package/Pair')
+      ('http://example.com/my-package#Pair')
+      (function(x) { return Object.prototype.toString.call(x) === '[object Array]' && x.length === 2; })
+      (function(pair) { return [pair[0]]; })
+      (function(pair) { return [pair[1]]; });
 
-    var env = $.env.concat([Either($.Unknown, $.Unknown), Pair($.Unknown, $.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), Pair($.Unknown)($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  id :: a -> a
-    var id = def('id', {}, [a, a], identity);
+    var id = def('id')({})([a, a])(identity);
 
     eq(id(['abc', 123]), ['abc', 123]);
     eq(id([Left('abc'), 123]), [Left('abc'), 123]);
@@ -2442,19 +2292,19 @@ describe('def', function() {
   it('supports higher-order functions', function() {
     //  f :: (String -> Number) -> Array String -> Array Number
     var f =
-    def('f',
-        {},
-        [$.Function([$.String, $.Number]), $.Array($.String), $.Array($.Number)],
-        Z.map);
+    def('f')
+       ({})
+       ([$.Function([$.String, $.Number]), $.Array($.String), $.Array($.Number)])
+       (Z.map);
 
     //  g :: (String -> Number) -> Array String -> Array Number
     var g =
-    def('g',
-        {},
-        [$.Function([$.String, $.Number]), $.Array($.String), $.Array($.Number)],
-        function(f, xs) { return f(xs); });
+    def('g')
+       ({})
+       ([$.Function([$.String, $.Number]), $.Array($.String), $.Array($.Number)])
+       (function(f, xs) { return f(xs); });
 
-    eq(f(length, ['foo', 'bar', 'baz', 'quux']), [3, 3, 3, 4]);
+    eq(f(length)(['foo', 'bar', 'baz', 'quux']), [3, 3, 3, 4]);
 
     throws(function() { g(/xxx/); },
            TypeError,
@@ -2468,7 +2318,7 @@ describe('def', function() {
            '\n' +
            'The value at position 1 is not a member of ‘String -> Number’.\n');
 
-    throws(function() { g(length, ['a', 'b', 'c']); },
+    throws(function() { g(length)(['a', 'b', 'c']); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2482,7 +2332,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-def/tree/v' + version + '#String for information about the String type.\n');
 
-    throws(function() { f(identity, ['a', 'b', 'c']); },
+    throws(function() { f(identity)(['a', 'b', 'c']); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -2498,10 +2348,10 @@ describe('def', function() {
 
     //  map :: (a -> b) -> Array a -> Array b
     var map =
-    def('map',
-        {},
-        [$.Function([a, b]), $.Array(a), $.Array(b)],
-        function(f, xs) {
+    def('map')
+       ({})
+       ([$.Function([a, b]), $.Array(a), $.Array(b)])
+       (function(f, xs) {
           var result = [];
           for (var idx = 0; idx < xs.length; idx += 1) {
             result.push(f(idx === 3 ? null : xs[idx]));
@@ -2509,9 +2359,9 @@ describe('def', function() {
           return result;
         });
 
-    eq(map(length, ['foo', 'bar']), [3, 3]);
+    eq(map(length)(['foo', 'bar']), [3, 3]);
 
-    throws(function() { map(length, ['foo', 'bar', 'baz', 'quux']); },
+    throws(function() { map(length)(['foo', 'bar', 'baz', 'quux']); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2531,7 +2381,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { map(function(s) { return s === 'baz' ? null : s.length; }, ['foo', 'bar', 'baz']); },
+    throws(function() { map(function(s) { return s === 'baz' ? null : s.length; })(['foo', 'bar', 'baz']); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2547,12 +2397,12 @@ describe('def', function() {
 
     //  reduce_ :: ((a, b) -> a) -> a -> Array b -> a
     var reduce_ =
-    def('reduce_',
-        {},
-        [$.Function([a, b, a]), a, $.Array(b), a],
-        Z.reduce);
+    def('reduce_')
+       ({})
+       ([$.Function([a, b, a]), a, $.Array(b), a])
+       (Z.reduce);
 
-    eq(reduce_(function(x, y) { return x + y; }, 0, [1, 2, 3, 4, 5, 6]), 21);
+    eq(reduce_(function(x, y) { return x + y; })(0)([1, 2, 3, 4, 5, 6]), 21);
 
     throws(function() { reduce_(null); },
            TypeError,
@@ -2568,10 +2418,10 @@ describe('def', function() {
 
     //  unfoldr :: (b -> Maybe (Pair a b)) -> b -> Array a
     var unfoldr =
-    def('unfoldr',
-        {},
-        [$.Function([b, Maybe($.Pair(a, b))]), b, $.Array(a)],
-        function(f, x) {
+    def('unfoldr')
+       ({})
+       ([$.Function([b, Maybe($.Pair(a)(b))]), b, $.Array(a)])
+       (function(f, x) {
           var result = [];
           var m = f(x);
           while (m.isJust) {
@@ -2584,9 +2434,9 @@ describe('def', function() {
     //  h :: Integer -> Maybe (Pair Integer Integer)
     function h(n) { return n >= 5 ? Nothing : Just([n, n + 1]); }
 
-    eq(unfoldr(h, 5), []);
-    eq(unfoldr(h, 4), [4]);
-    eq(unfoldr(h, 1), [1, 2, 3, 4]);
+    eq(unfoldr(h)(5), []);
+    eq(unfoldr(h)(4), [4]);
+    eq(unfoldr(h)(1), [1, 2, 3, 4]);
 
     throws(function() { unfoldr(null); },
            TypeError,
@@ -2602,12 +2452,12 @@ describe('def', function() {
 
     //  T :: a -> (a -> b) -> b
     var T =
-    def('T',
-        {},
-        [a, $.Function([a, b]), b],
-        function(x, f) { return f(/* x */); });
+    def('T')
+       ({})
+       ([a, $.Function([a, b]), b])
+       (function(x, f) { return f(/* x */); });
 
-    throws(function() { T(100, Math.sqrt); },
+    throws(function() { T(100)(Math.sqrt); },
            TypeError,
            '‘T’ applied ‘a -> b’ to the wrong number of arguments\n' +
            '\n' +
@@ -2619,16 +2469,16 @@ describe('def', function() {
   });
 
   it('supports type-class constraints', function() {
-    var env = $.env.concat([Integer, Maybe($.Unknown), Either($.Unknown, $.Unknown)]);
+    var env = $.env.concat([Integer, Maybe($.Unknown), Either($.Unknown)($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  alt :: Alternative a => a -> a -> a
-    var alt = def('alt', {a: [Z.Alternative]}, [a, a, a], Z.alt);
+    var alt = def('alt')({a: [Z.Alternative]})([a, a, a])(Z.alt);
 
-    eq(alt(Nothing, Nothing), Nothing);
-    eq(alt(Nothing, Just(1)), Just(1));
-    eq(alt(Just(2), Nothing), Just(2));
-    eq(alt(Just(3), Just(4)), Just(3));
+    eq(alt(Nothing)(Nothing), Nothing);
+    eq(alt(Nothing)(Just(1)), Just(1));
+    eq(alt(Just(2))(Nothing), Just(2));
+    eq(alt(Just(3))(Just(4)), Just(3));
 
     throws(function() { alt(Left(1)); },
            TypeError,
@@ -2645,10 +2495,10 @@ describe('def', function() {
            'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Alternative for information about the sanctuary-type-classes/Alternative type class.\n');
 
     //  concat :: Semigroup a => a -> a -> a
-    var concat = def('concat', {a: [Z.Semigroup]}, [a, a, a], Z.concat);
+    var concat = def('concat')({a: [Z.Semigroup]})([a, a, a])(Z.concat);
 
-    eq(concat([1, 2, 3], [4, 5, 6]), [1, 2, 3, 4, 5, 6]);
-    eq(concat('abc', 'def'), 'abcdef');
+    eq(concat([1, 2, 3])([4, 5, 6]), [1, 2, 3, 4, 5, 6]);
+    eq(concat('abc')('def'), 'abcdef');
 
     throws(function() { concat(/x/); },
            TypeError,
@@ -2664,7 +2514,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Semigroup for information about the sanctuary-type-classes/Semigroup type class.\n');
 
-    throws(function() { concat([], ''); },
+    throws(function() { concat([])(''); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2678,7 +2528,7 @@ describe('def', function() {
            '\n' +
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
-    throws(function() { concat('', []); },
+    throws(function() { concat('')([]); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2694,19 +2544,19 @@ describe('def', function() {
 
     //  filter :: (Alternative m, Monad m) => (a -> Boolean) -> m a -> m a
     var filter =
-    def('filter',
-        {m: [Z.Alternative, Z.Monad]},
-        [$.Function([a, $.Boolean]), m(a), m(a)],
-        Z.filterM);
+    def('filter')
+       ({m: [Z.Alternative, Z.Monad]})
+       ([$.Function([a, $.Boolean]), m(a), m(a)])
+       (Z.filterM);
 
     //  even :: Integer -> Boolean
     function even(x) { return x % 2 === 0; }
 
-    eq(filter(even, Nothing), Nothing);
-    eq(filter(even, Just(9)), Nothing);
-    eq(filter(even, Just(4)), Just(4));
+    eq(filter(even)(Nothing), Nothing);
+    eq(filter(even)(Just(9)), Nothing);
+    eq(filter(even)(Just(4)), Just(4));
 
-    throws(function() { filter(even, Right(42)); },
+    throws(function() { filter(even)(Right(42)); },
            TypeError,
            'Type-class constraint violation\n' +
            '\n' +
@@ -2722,10 +2572,10 @@ describe('def', function() {
 
     //  concatMaybes :: Semigroup a => Maybe a -> Maybe a -> Maybe a
     var concatMaybes =
-    def('concatMaybes',
-        {a: [Z.Semigroup]},
-        [Maybe(a), Maybe(a), Maybe(a)],
-        always(Just(/xxx/)));
+    def('concatMaybes')
+       ({a: [Z.Semigroup]})
+       ([Maybe(a), Maybe(a), Maybe(a)])
+       (always(Just(/xxx/)));
 
     throws(function() { concatMaybes(Just(/xxx/)); },
            TypeError,
@@ -2741,7 +2591,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Semigroup for information about the sanctuary-type-classes/Semigroup type class.\n');
 
-    throws(function() { concatMaybes(Just('abc'), Just(/xxx/)); },
+    throws(function() { concatMaybes(Just('abc'))(Just(/xxx/)); },
            TypeError,
            'Type-class constraint violation\n' +
            '\n' +
@@ -2755,7 +2605,7 @@ describe('def', function() {
            '\n' +
            'See https://github.com/sanctuary-js/sanctuary-type-classes/tree/v' + Z$version + '#Semigroup for information about the sanctuary-type-classes/Semigroup type class.\n');
 
-    throws(function() { concatMaybes(Just('abc'), Just('def')); },
+    throws(function() { concatMaybes(Just('abc'))(Just('def')); },
            TypeError,
            'Type-class constraint violation\n' +
            '\n' +
@@ -2771,12 +2621,12 @@ describe('def', function() {
 
     //  sillyConst :: (Alternative a, Semigroup b) => a -> b -> a
     var sillyConst =
-    def('sillyConst',
-        {a: [Z.Alternative], b: [Z.Semigroup]},
-        [a, b, a],
-        function(x, y) { return x; });
+    def('sillyConst')
+       ({a: [Z.Alternative], b: [Z.Semigroup]})
+       ([a, b, a])
+       (function(x, y) { return x; });
 
-    eq(sillyConst(Just(42), [1, 2, 3]), Just(42));
+    eq(sillyConst(Just(42))([1, 2, 3]), Just(42));
 
     throws(function() { sillyConst(true); },
            TypeError,
@@ -2794,7 +2644,7 @@ describe('def', function() {
   });
 
   it('supports unary type variables', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown), Maybe($.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), Maybe($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  f :: Type -> Type
@@ -2802,18 +2652,18 @@ describe('def', function() {
 
     //  map :: Functor f => (a -> b) -> f a -> f b
     var map =
-    def('map',
-        {f: [Z.Functor]},
-        [$.Function([a, b]), f(a), f(b)],
-        Z.map);
+    def('map')
+       ({f: [Z.Functor]})
+       ([$.Function([a, b]), f(a), f(b)])
+       (Z.map);
 
-    eq(map(Math.sqrt, Nothing), Nothing);
-    eq(map(Math.sqrt, Just(9)), Just(3));
+    eq(map(Math.sqrt)(Nothing), Nothing);
+    eq(map(Math.sqrt)(Just(9)), Just(3));
 
     var xs = [1, 4, 9];
     xs['fantasy-land/map'] = xs.map;
 
-    throws(function() { map(Math.sqrt, xs); },
+    throws(function() { map(Math.sqrt)(xs); },
            TypeError,
            '‘map’ applied ‘a -> b’ to the wrong number of arguments\n' +
            '\n' +
@@ -2827,12 +2677,35 @@ describe('def', function() {
            '  - 0\n' +
            '  - [1, 4, 9, "fantasy-land/map": function map() { [native code] }]\n');
 
+    //  maybe_ :: (() -> b) -> (a -> b) -> Maybe a -> b
+    var maybe_ =
+    def('maybe_')
+       ({})
+       ([$.Function([b]), $.Function([a, b]), Maybe(a), b])
+       (function(thunk, f, maybe) {
+          return maybe.isJust ? f(maybe.value) : thunk('XXX');
+        });
+
+    eq(maybe_(always(0))(length)(Just('abc')), 3);
+
+    throws(function() { maybe_(always(0))(length)(Nothing); },
+           TypeError,
+           '‘maybe_’ applied ‘() -> b’ to the wrong number of arguments\n' +
+           '\n' +
+           'maybe_ :: (() -> b) -> (a -> b) -> Maybe a -> b\n' +
+           '           ^^\n' +
+           '           1\n' +
+           '\n' +
+           'Expected zero arguments but received one argument:\n' +
+           '\n' +
+           '  - "XXX"\n');
+
     //  sum :: Foldable f => f FiniteNumber -> FiniteNumber
     var sum =
-    def('sum',
-        {f: [Z.Foldable]},
-        [f($.FiniteNumber), $.FiniteNumber],
-        function(foldable) {
+    def('sum')
+       ({f: [Z.Foldable]})
+       ([f($.FiniteNumber), $.FiniteNumber])
+       (function(foldable) {
           return Z.reduce(function(x, y) { return x + y; }, 0, foldable);
         });
 
@@ -2872,10 +2745,10 @@ describe('def', function() {
 
     //  sort :: (Ord a, Applicative f, Foldable f, Monoid (f a)) => f a -> f a
     var sort =
-    def('sort',
-        {a: [Z.Ord], f: [Z.Applicative, Z.Foldable, Z.Monoid]},
-        [f(a), f(a)],
-        function(m) {
+    def('sort')
+       ({a: [Z.Ord], f: [Z.Applicative, Z.Foldable, Z.Monoid]})
+       ([f(a), f(a)])
+       (function(m) {
           var M = m.constructor;
           return Z.reduce(
             function(m, x) { return Z.concat(m, Z.of(M, x)); },
@@ -2921,7 +2794,7 @@ describe('def', function() {
   });
 
   it('supports binary type variables', function() {
-    var env = $.env.concat([Either($.Unknown, $.Unknown), Maybe($.Unknown), $Pair($.Unknown, $.Unknown)]);
+    var env = $.env.concat([Either($.Unknown)($.Unknown), Maybe($.Unknown), $Pair($.Unknown)($.Unknown)]);
     var def = $.create({checkTypes: true, env: env});
 
     //  f :: (Type, Type) -> Type
@@ -2929,15 +2802,15 @@ describe('def', function() {
 
     //  bimap :: Bifunctor f => (a -> b) -> (c -> d) -> f a c -> f b d
     var bimap =
-    def('bimap',
-        {f: [Z.Bifunctor]},
-        [$.Function([a, b]), $.Function([c, d]), f(a, c), f(b, d)],
-        Z.bimap);
+    def('bimap')
+       ({f: [Z.Bifunctor]})
+       ([$.Function([a, b]), $.Function([c, d]), f(a)(c), f(b)(d)])
+       (Z.bimap);
 
     eq(bimap.toString(), 'bimap :: Bifunctor f => (a -> b) -> (c -> d) -> f a c -> f b d');
-    eq(bimap(length, Math.sqrt, Pair('Sanctuary', 25)), Pair(9, 5));
+    eq(bimap(length)(Math.sqrt)(Pair('Sanctuary', 25)), Pair(9, 5));
 
-    throws(function() { bimap(length, Math.sqrt, Pair(['foo', true, 42], null)); },
+    throws(function() { bimap(length)(Math.sqrt)(Pair(['foo', true, 42], null)); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2950,9 +2823,9 @@ describe('def', function() {
            'Since there is no type of which all the above values are members, the type-variable constraint has been violated.\n');
 
     //  chain :: Chain m => (a -> m b) -> m a -> m b
-    var chain = def('chain', {m: [Z.Chain]}, [$.Function([a, m(b)]), m(a), m(b)], Z.chain);
+    var chain = def('chain')({m: [Z.Chain]})([$.Function([a, m(b)]), m(a), m(b)])(Z.chain);
 
-    throws(function() { chain(Left, Just('x')); },
+    throws(function() { chain(Left)(Just('x')); },
            TypeError,
            'Type-variable constraint violation\n' +
            '\n' +
@@ -2972,21 +2845,20 @@ describe('def', function() {
     var count = 0;
 
     //  Void :: Type
-    var Void = $.NullaryType(
-      'my-package/Void',
-      'http://example.com/my-package#Void',
-      function(x) { count += 1; return false; }
-    );
+    var Void = $.NullaryType
+      ('my-package/Void')
+      ('http://example.com/my-package#Void')
+      (function(x) { count += 1; return false; });
 
     var env = [$.Array($.Unknown), Maybe($.Unknown), $.Number, Void];
     var def = $.create({checkTypes: true, env: env});
 
     //  head :: Array a -> Maybe a
     var head =
-    def('head',
-        {},
-        [$.Array(a), Maybe(a)],
-        function(xs) { return xs.length > 0 ? Just(xs[0]) : Nothing; });
+    def('head')
+       ({})
+       ([$.Array(a), Maybe(a)])
+       (function(xs) { return xs.length > 0 ? Just(xs[0]) : Nothing; });
 
     eq(head([]), Nothing);
     eq(count, 0);
@@ -2995,17 +2867,17 @@ describe('def', function() {
   });
 
   it('replaces Unknowns with free type variables', function() {
-    var env = [Either($.Unknown, $.Unknown), $.Number];
+    var env = [Either($.Unknown)($.Unknown), $.Number];
     var def = $.create({checkTypes: true, env: env});
 
     var f = $.UnaryTypeVariable('f');
 
     //  map :: Functor f => (a -> b) -> f a -> f b
     var map =
-    def('map',
-        {f: [Z.Functor]},
-        [$.Function([a, b]), f(a), f(b)],
-        Z.map);
+    def('map')
+       ({f: [Z.Functor]})
+       ([$.Function([a, b]), f(a), f(b)])
+       (Z.map);
 
     throws(function() { map(Right(Right(Right(Right(0))))); },
            TypeError,
@@ -3026,47 +2898,43 @@ describe('test', function() {
 
   it('is a ternary function', function() {
     eq(typeof $.test, 'function');
-    eq($.test.length, 3);
+    eq($.test.length, 1);
     eq($.test.toString(), 'test :: Array Type -> Type -> Any -> Boolean');
   });
 
   it('supports nullary types', function() {
-    eq($.test($.env, $.Number, null), false);
-    eq($.test($.env, $.Number, '42'), false);
-    eq($.test($.env, $.Number, 42), true);
+    eq($.test($.env)($.Number)(null), false);
+    eq($.test($.env)($.Number)('42'), false);
+    eq($.test($.env)($.Number)(42), true);
   });
 
   it('supports unary types', function() {
-    eq($.test($.env, $.Array($.Number), null), false);
-    eq($.test($.env, $.Array($.Number), '42'), false);
-    eq($.test($.env, $.Array($.Number), [1, 2, '3']), false);
-    eq($.test($.env, $.Array($.Number), ['42']), false);
-    eq($.test($.env, $.Array($.Number), []), true);
-    eq($.test($.env, $.Array($.Number), [1, 2, 3]), true);
+    eq($.test($.env)($.Array($.Number))(null), false);
+    eq($.test($.env)($.Array($.Number))('42'), false);
+    eq($.test($.env)($.Array($.Number))([1, 2, '3']), false);
+    eq($.test($.env)($.Array($.Number))(['42']), false);
+    eq($.test($.env)($.Array($.Number))([]), true);
+    eq($.test($.env)($.Array($.Number))([1, 2, 3]), true);
   });
 
   it('supports binary types', function() {
-    eq($.test($.env, $Pair($.Number, $.String), Pair(42, 42)), false);
-    eq($.test($.env, $Pair($.Number)($.String), Pair(42, 42)), false);
-    eq($.test($.env, $Pair($.Number, $.String), Pair('', '')), false);
-    eq($.test($.env, $Pair($.Number)($.String), Pair('', '')), false);
-    eq($.test($.env, $Pair($.Number, $.String), Pair('', 42)), false);
-    eq($.test($.env, $Pair($.Number)($.String), Pair('', 42)), false);
-    eq($.test($.env, $Pair($.Number, $.String), Pair(42, '')), true);
-    eq($.test($.env, $Pair($.Number)($.String), Pair(42, '')), true);
+    eq($.test($.env)($Pair($.Number)($.String))(Pair(42, 42)), false);
+    eq($.test($.env)($Pair($.Number)($.String))(Pair('', '')), false);
+    eq($.test($.env)($Pair($.Number)($.String))(Pair('', 42)), false);
+    eq($.test($.env)($Pair($.Number)($.String))(Pair(42, '')), true);
   });
 
   it('supports type variables', function() {
-    eq($.test($.env, $.Array(a), null), false);
-    eq($.test($.env, $.Array(a), '42'), false);
-    eq($.test($.env, $.Array(a), [1, 2, '3']), false);
-    eq($.test($.env, $.Array(a), ['42']), true);
-    eq($.test($.env, $.Array(a), []), true);
-    eq($.test($.env, $.Array(a), [1, 2, 3]), true);
+    eq($.test($.env)($.Array(a))(null), false);
+    eq($.test($.env)($.Array(a))('42'), false);
+    eq($.test($.env)($.Array(a))([1, 2, '3']), false);
+    eq($.test($.env)($.Array(a))(['42']), true);
+    eq($.test($.env)($.Array(a))([]), true);
+    eq($.test($.env)($.Array(a))([1, 2, 3]), true);
 
-    eq($.test($.env, $Pair(a, a), Pair('foo', 42)), false);
-    eq($.test($.env, $Pair(a, a), Pair('foo', 'bar')), true);
-    eq($.test($.env, $Pair(a, b), Pair('foo', 42)), true);
+    eq($.test($.env)($Pair(a)(a))(Pair('foo', 42)), false);
+    eq($.test($.env)($Pair(a)(a))(Pair('foo', 'bar')), true);
+    eq($.test($.env)($Pair(a)(b))(Pair('foo', 42)), true);
   });
 
 });
@@ -3075,7 +2943,7 @@ describe('NullaryType', function() {
 
   it('is a ternary function', function() {
     eq(typeof $.NullaryType, 'function');
-    eq($.NullaryType.length, 3);
+    eq($.NullaryType.length, 1);
     eq($.NullaryType.toString(), 'NullaryType :: String -> String -> (Any -> Boolean) -> Type');
   });
 
@@ -3085,7 +2953,7 @@ describe('UnaryType', function() {
 
   it('is a quaternary function', function() {
     eq(typeof $.UnaryType, 'function');
-    eq($.UnaryType.length, 4);
+    eq($.UnaryType.length, 1);
     eq($.UnaryType.toString(), 'UnaryType :: String -> String -> (Any -> Boolean) -> (t a -> Array a) -> Function');
   });
 
@@ -3111,12 +2979,12 @@ describe('BinaryType', function() {
 
   it('is a quinary function', function() {
     eq(typeof $.BinaryType, 'function');
-    eq($.BinaryType.length, 5);
+    eq($.BinaryType.length, 1);
     eq($.BinaryType.toString(), 'BinaryType :: String -> String -> (Any -> Boolean) -> (t a b -> Array a) -> (t a b -> Array b) -> Function');
   });
 
   it('returns a type constructor which type checks its arguments', function() {
-    throws(function() { Either($.Number, {x: $.Number, y: $.Number}); },
+    throws(function() { Either($.Number)({x: $.Number, y: $.Number}); },
            TypeError,
            'Invalid value\n' +
            '\n' +
@@ -3188,9 +3056,8 @@ describe('BinaryTypeVariable', function() {
     var p = $.BinaryTypeVariable('p');
 
     eq(typeof p, 'function');
-    eq(p.length, 2);
+    eq(p.length, 1);
     eq(p.toString(), 'p :: Type -> Type -> Type');
-    eq(p(a, b).toString(), '(p a b)');
     eq(p(a)(b).toString(), '(p a b)');
 
     throws(function() { p(Number); },
@@ -3224,10 +3091,10 @@ describe('Thunk', function() {
 
     //  why :: (() -> Integer) -> Integer
     var why =
-    def('why',
-        {},
-        [$.Thunk($.Integer), $.Integer],
-        function(thunk) { return thunk(); });
+    def('why')
+       ({})
+       ([$.Thunk($.Integer), $.Integer])
+       (function(thunk) { return thunk(); });
 
     eq(why(function() { return 42; }), 42);
 
@@ -3262,18 +3129,18 @@ describe('Predicate', function() {
 
     //  when :: (a -> Boolean) -> (a -> a) -> a -> a
     var when =
-    def('when',
-        {},
-        [$.Predicate(a), $.Function([a, a]), a, a],
-        function(pred, f, x) { return pred(x) ? f(x) : x; });
+    def('when')
+       ({})
+       ([$.Predicate(a), $.Function([a, a]), a, a])
+       (function(pred, f, x) { return pred(x) ? f(x) : x; });
 
     //  abs :: Number -> Number
-    var abs = when(function(x) { return x < 0; }, function(x) { return -x; });
+    var abs = when(function(x) { return x < 0; })(function(x) { return -x; });
 
     eq(abs(42), 42);
     eq(abs(-1), 1);
 
-    throws(function() { when(identity, identity, 'foo'); },
+    throws(function() { when(identity)(identity)('foo'); },
            TypeError,
            'Invalid value\n' +
            '\n' +
